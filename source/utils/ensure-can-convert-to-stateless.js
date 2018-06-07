@@ -1,4 +1,5 @@
 /* eslint-env node */
+/* eslint-disable no-console */
 const eslint = require('eslint');
 const reactEslint = require('eslint-plugin-react');
 
@@ -24,9 +25,10 @@ module.exports = function(sourceCode, eslintrc) {
       }
     }).length
   ) {
-    console.log(
-      `👻  Component can't be converted. Please make sure it's not already stateless and that there is no state or methods in your class.`
-    );
+    console.log(`👻  Component can't be converted. Please make sure that:`);
+    console.log(`  • There's no state or references to state`);
+    console.log(`  • There are no class methods`);
+    console.log(`  • There are no refs`);
 
     process.exit(1);
   }

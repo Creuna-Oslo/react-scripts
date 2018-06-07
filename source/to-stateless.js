@@ -31,7 +31,7 @@ function convertToStateless(componentName) {
 
     ensureComponentExists(folderPath, componentName);
 
-    const fileContent = fs.readFileSync(filePath);
+    const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' });
 
     ensureCanConvertToStateless(fileContent, eslintrc);
 

@@ -9,6 +9,7 @@ class Image extends React.Component {
     responsive: PropTypes.bool,
     src: PropTypes.string
   };
+
   static defaultProps = {
     initialSize: 300,
     responsive: true

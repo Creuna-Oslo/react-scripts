@@ -1,4 +1,3 @@
-const diff = require('../utils/diff');
 const generate = require('@babel/generator').default;
 const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const { parse } = require('@babel/parser');
@@ -12,8 +11,6 @@ module.exports = function(sourceCode, componentName) {
     plugins: ['jsx', 'classProperties'],
     sourceType: 'module'
   });
-
-  const before = generate(syntaxTree).code;
 
   let renderBody,
     propTypes,
@@ -114,5 +111,5 @@ module.exports = function(sourceCode, componentName) {
 
   const { code } = generate(syntaxTree);
 
-  diff(before, code);
+  return code;
 };
