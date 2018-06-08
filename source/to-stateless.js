@@ -12,51 +12,61 @@ const prompt = require('./utils/prompt');
 const toStatelessTransform = require('./transforms/to-stateless');
 
 module.exports = function(componentName) {
-  prompt(
-    {
-      componentName: {
-        text: 'Name of component',
-        value: componentName
-      }
-    },
-    ({ componentName }) => {
-      convertToStateless(componentName);
-    }
-  );
-
-  function convertToStateless(componentName) {
-    getConfigs(({ eslintrc, prettierConfig, componentsPath }) => {
-      const fileName = `${componentName}.jsx`;
-      const folderPath = path.join(componentsPath, componentName);
-      const filePath = path.join(folderPath, fileName);
-
-      ensureComponentExists(folderPath, componentName);
-
-      const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' });
-
-      ensureCanConvertToStateless(fileContent, eslintrc);
-
-      const newFileContent = toStatelessTransform(fileContent, componentName);
-
-      fs.writeFile(
-        filePath,
-        prettier.format(newFileContent, prettierConfig),
-        {},
-        err => {
-          if (err) {
-            console.log(
-              `👻  ${chalk.red('Error writing')} ${chalk.blueBright(
-                `${componentName}.jsx`
-              )}`,
-              err
-            );
-
-            process.exit(1);
-          }
-
-          console.log(`🤖  ${chalk.green(`Beep boop, I'm done!`)}`);
+  getConfigs(({ eslintrc, prettierConfig, componentsPath }) => {
+    prompt(
+      {
+        componentName: {
+          text: 'Name of component',
+          value: componentName
         }
-      );
-    });
+      },
+      ({ componentName }) => {
+        convertToStateless({
+          componentName,
+          componentsPath,
+          eslintrc,
+          prettierConfig
+        });
+      }
+    );
+  });
+
+  function convertToStateless({
+    componentName,
+    componentsPath,
+    eslintrc,
+    prettierConfig
+  }) {
+    const fileName = `${componentName}.jsx`;
+    const folderPath = path.join(componentsPath, componentName);
+    const filePath = path.join(folderPath, fileName);
+
+    ensureComponentExists(folderPath, componentName);
+
+    const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' });
+
+    ensureCanConvertToStateless(fileContent, eslintrc);
+
+    const newFileContent = toStatelessTransform(fileContent, componentName);
+
+    fs.writeFile(
+      filePath,
+      prettier.format(newFileContent, prettierConfig),
+      {},
+      err => {
+        if (err) {
+          console.log(
+            `👻  ${chalk.red('Error writing')} ${chalk.blueBright(
+              `${componentName}.jsx`
+            )}`,
+            err
+          );
+
+          process.exit(1);
+        }
+
+        console.log(`🤖  ${chalk.green(`Beep boop, I'm done!`)}`);
+      }
+    );
   }
 };
