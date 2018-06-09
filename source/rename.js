@@ -1,5 +1,6 @@
 /* eslint-env node */
 /* eslint-disable no-console */
+const chalk = require('chalk');
 const fs = require('fs');
 const prettier = require('prettier');
 const path = require('path');
@@ -102,5 +103,6 @@ function renameComponent({
     .then(
       () =>
         shouldRenameFolder && renameFile(folderPath, newComponentName, 'folder')
-    );
+    )
+    .then(() => console.log(`🤖  ${chalk.green(`Beep boop, I'm done!`)}`));
 }
