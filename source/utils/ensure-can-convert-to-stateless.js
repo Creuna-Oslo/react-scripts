@@ -1,5 +1,6 @@
 /* eslint-env node */
 /* eslint-disable no-console */
+const chalk = require('chalk');
 const eslint = require('eslint');
 const reactEslint = require('eslint-plugin-react');
 
@@ -25,10 +26,13 @@ module.exports = function(sourceCode, eslintrc) {
       }
     }).length
   ) {
-    console.log(`👻  Component can't be converted. Please make sure that:`);
-    console.log(`  • There's no state or references to state`);
-    console.log(`  • There are no class methods`);
-    console.log(`  • There are no refs`);
+    console.log(
+      `😭  ${chalk.redBright(`Component can't be converted. Make sure that there is no:
+  • state or references to state
+  • class methods
+  • refs
+        `)}`
+    );
 
     process.exit(1);
   }
