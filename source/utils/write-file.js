@@ -4,9 +4,12 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-module.exports = function(folderPath, fileName, fileContent) {
+module.exports = function(filePath, fileContent) {
+  const slugs = filePath.split(path.sep);
+  const fileName = slugs.slice(-1)[0];
+
   return new Promise(res => {
-    fs.writeFile(path.join(folderPath, fileName), fileContent, {}, err => {
+    fs.writeFile(filePath, fileContent, {}, err => {
       if (err) {
         console.log(
           `👻  ${chalk.red('Error writing')} ${chalk.blueBright(fileName)}`,

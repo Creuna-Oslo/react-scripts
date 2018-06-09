@@ -44,13 +44,13 @@ function createMockupPage({
   prettierConfig
 }) {
   const folderPath = path.join(mockupPath, componentName);
-  const indexFilename = 'index.js';
-  const jsonFilename = `${componentName}.json`;
-  const jsxFilename = `${componentName}.jsx`;
+  const indexFilePath = path.join(folderPath, 'index.js');
+  const jsonFilePath = path.join(folderPath, `${componentName}.json`);
+  const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
   const pascalComponentName = kebabToPascal(componentName);
 
   fsExtra.ensureDirSync(mockupPath);
-  ensureEmptyFolder(folderPath, componentName);
+  ensureEmptyFolder(folderPath);
 
   console.log(`⚙️  Generating ${chalk.blueBright(componentName)}`);
 
@@ -72,7 +72,7 @@ function createMockupPage({
   );
 
   createFolder(folderPath)
-    .then(() => writeFile(folderPath, jsxFilename, jsxFileContent))
-    .then(() => writeFile(folderPath, jsonFilename, '{}'))
-    .then(() => writeFile(folderPath, indexFilename, indexFileContent));
+    .then(() => writeFile(jsxFilePath, jsxFileContent))
+    .then(() => writeFile(jsonFilePath, '{}'))
+    .then(() => writeFile(indexFilePath, indexFileContent));
 }
