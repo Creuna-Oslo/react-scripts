@@ -23,6 +23,7 @@ module.exports = function(sourceCode, componentName) {
     ClassMethod(path) {
       if (path.get('key').isIdentifier({ name: 'render' })) {
         path.traverse({
+          // Replace this.props.x with x
           MemberExpression(path) {
             const object = path.get('object');
 
@@ -31,8 +32,23 @@ module.exports = function(sourceCode, componentName) {
               object.get('object').isThisExpression() &&
               object.get('property').isIdentifier({ name: 'props' })
             ) {
-              // Replace this.props.x with x
               path.replaceWith(path.node.property);
+            }
+          },
+
+          // Remove destructuring assignment from this.props
+          VariableDeclaration(path) {
+            const declarator = path.get('declarations')[0];
+
+            if (declarator.get('init').isMemberExpression()) {
+              const expression = declarator.get('init');
+
+              if (
+                expression.get('object').isThisExpression() &&
+                expression.get('property').isIdentifier({ name: 'props' })
+              ) {
+                path.remove();
+              }
             }
           }
         });
@@ -81,31 +97,31 @@ module.exports = function(sourceCode, componentName) {
             )
           ])
         );
-      }
 
-      if (defaultProps) {
+        if (defaultProps) {
+          path.insertAfter(
+            t.assignmentExpression(
+              '=',
+              t.memberExpression(
+                t.identifier(pascalComponentName),
+                t.identifier('defaultProps')
+              ),
+              defaultProps
+            )
+          );
+        }
+
         path.insertAfter(
           t.assignmentExpression(
             '=',
             t.memberExpression(
               t.identifier(pascalComponentName),
-              t.identifier('defaultProps')
+              t.identifier('propTypes')
             ),
-            defaultProps
+            propTypes
           )
         );
       }
-
-      path.insertAfter(
-        t.assignmentExpression(
-          '=',
-          t.memberExpression(
-            t.identifier(pascalComponentName),
-            t.identifier('propTypes')
-          ),
-          propTypes
-        )
-      );
     }
   });
 
