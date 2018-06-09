@@ -9,8 +9,6 @@ const getConfigs = require('./utils/get-configs');
 const toStatefulTransform = require('./transforms/to-stateful');
 const writeFile = require('./utils/write-file');
 
-const diff = require('./utils/diff');
-
 module.exports = function(pathOrName) {
   getConfigs(({ eslintrc, prettierConfig, componentsPath }) => {
     getComponent(
@@ -34,12 +32,10 @@ module.exports = function(pathOrName) {
       prettierConfig
     );
 
-    diff(fileContent, newFileContent);
-
-    // writeFile(
-    //   filePath,
-    //   newFileContent,
-    //   `🤖  ${chalk.green(`Beep boop, I'm done!`)}`
-    // );
+    writeFile(
+      filePath,
+      newFileContent,
+      `🤖  ${chalk.green(`Beep boop, I'm done!`)}`
+    );
   }
 };
