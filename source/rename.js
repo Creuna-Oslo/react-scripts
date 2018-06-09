@@ -8,8 +8,10 @@ const path = require('path');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const getComponent = require('./utils/get-component');
 const getConfigs = require('./utils/get-configs');
+const lastSlug = require('./utils/last-slug');
 const prompt = require('./utils/prompt');
 const readFile = require('./utils/read-file');
+const removeLastSlug = require('./utils/remove-last-slug');
 const renameFile = require('./utils/rename-file');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
@@ -57,16 +59,12 @@ function renameComponent({
 
   const hasScssfile = fs.existsSync(path.join(folderPath, scssFilename));
   const hasIndexFile = fs.existsSync(path.join(folderPath, indexFilename));
-  const slugs = folderPath.split(path.sep);
-  const shouldRenameFolder = componentName === slugs.slice(-1)[0];
+  const shouldRenameFolder = componentName === lastSlug(folderPath);
   const shouldWriteIndex = shouldRenameFolder && hasIndexFile;
 
   const newFolderPath =
     shouldRenameFolder &&
-    path.join(
-      folderPath.slice(0, folderPath.lastIndexOf(path.sep)),
-      newComponentName
-    );
+    path.join(removeLastSlug(folderPath), newComponentName);
 
   if (shouldRenameFolder) {
     ensureEmptyFolder(newFolderPath);

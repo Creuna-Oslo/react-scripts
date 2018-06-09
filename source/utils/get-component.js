@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const prompt = require('./prompt');
+const removeLastSlug = require('./remove-last-slug');
 
 function isFullPath(inputPath) {
   const slugs = inputPath.split(path.sep);
@@ -57,7 +58,7 @@ function parse({ pathOrName, componentsPath, callback }) {
       callback,
       componentName: lastSlug.replace(/.jsx$/, ''),
       filePath: pathOrName,
-      folderPath: pathOrName.slice(0, pathOrName.lastIndexOf(path.sep))
+      folderPath: removeLastSlug(pathOrName)
     });
     return;
   }
@@ -73,9 +74,7 @@ function parse({ pathOrName, componentsPath, callback }) {
       filePath: hasFileExtension
         ? fullPath
         : path.join(fullPath, `${componentName}.jsx`),
-      folderPath: hasFileExtension
-        ? fullPath.slice(0, fullPath.lastIndexOf(path.sep))
-        : fullPath
+      folderPath: hasFileExtension ? removeLastSlug(fullPath) : fullPath
     });
     return;
   }

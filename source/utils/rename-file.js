@@ -4,13 +4,12 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
+const removeLastSlug = require('./remove-last-slug');
+
 module.exports = function(filePath, newFilename, type = 'file') {
   const slugs = filePath.split(path.sep);
   const fileName = slugs.slice(-1)[0];
-  const newFilePath = path.join(
-    filePath.slice(0, filePath.lastIndexOf(path.sep)),
-    newFilename
-  );
+  const newFilePath = path.join(removeLastSlug(filePath), newFilename);
 
   return new Promise(res => {
     fs.rename(filePath, newFilePath, err => {

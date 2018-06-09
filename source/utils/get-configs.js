@@ -6,6 +6,8 @@ const path = require('path');
 
 const red = chalk.redBright;
 
+const removeLastSlug = require('./remove-last-slug');
+
 // Traverse up the folder tree, trying to find config files
 module.exports = function(callback) {
   Promise.all([
@@ -34,10 +36,7 @@ module.exports = function(callback) {
       if (filePath) {
         const creunarcPath = path.relative(__dirname, filePath);
         const { componentsPath, mockupPath } = require(creunarcPath);
-        const projectRoot = filePath.substring(
-          0,
-          filePath.lastIndexOf(path.sep)
-        );
+        const projectRoot = removeLastSlug(filePath);
 
         return {
           componentsPath: path.join(projectRoot, componentsPath),
