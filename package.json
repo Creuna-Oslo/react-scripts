@@ -22,7 +22,6 @@
     "babel-eslint": "^8.2.3",
     "babel-types": "^6.26.0",
     "chalk": "^2.4.1",
-    "diff": "^3.5.0",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
