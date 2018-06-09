@@ -2,35 +2,37 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 
-class Image extends React.Component {
+class ImageStateful extends React.Component {
   static propTypes = {
     alt: PropTypes.string,
     initialSize: PropTypes.number,
     responsive: PropTypes.bool,
     src: PropTypes.string
   };
-
   static defaultProps = {
     initialSize: 300,
     responsive: true
   };
 
   render() {
+    const { alt } = this.props;
+    const test = 'test';
     return !this.props.src ? null : (
       <div
-        className={cn('image', {
-          'image-class': true,
+        className={cn('image-stateful', {
+          'image-stateful-class': true,
           'big-image': true
         })}
       >
         <img
-          className="image-inner"
+          className="image-stateful-inner"
           src={this.props.src}
-          alt={this.props.alt}
+          alt={alt}
+          test={test}
         />
       </div>
     );
   }
 }
 
-export default Image;
+export default ImageStateful;
