@@ -4,6 +4,8 @@ const chalk = require('chalk');
 const findUp = require('find-up');
 const path = require('path');
 
+const red = chalk.redBright;
+
 // Traverse up the folder tree, trying to find config files
 module.exports = function(callback) {
   Promise.all([
@@ -21,9 +23,9 @@ module.exports = function(callback) {
         };
       } else {
         console.log(
-          `😱  No ${chalk.redBright(
-            '.eslintrc.json'
-          )} file found. Check the readme`
+          `😱  ${red('No')} .eslintrc.json' ${red(
+            'file found. Check the readme'
+          )}`
         );
         process.exit(1);
       }
@@ -43,9 +45,9 @@ module.exports = function(callback) {
         };
       } else {
         console.log(
-          `😱  No ${chalk.redBright(
-            '.creunarc.json'
-          )} file found. Check the readme`
+          `😱  ${red('No')} .creunarc.json' ${red(
+            'file found. Check the readme'
+          )}`
         );
         process.exit(1);
       }

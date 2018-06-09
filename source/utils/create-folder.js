@@ -10,9 +10,7 @@ module.exports = function(folderPath) {
     fs.mkdir(folderPath, err => {
       if (err) {
         console.log(
-          `👻  ${chalk.red('Error creating directory')} ${chalk.blueBright(
-            relativePath
-          )}`,
+          `👻  ${chalk.redBright('Error creating directory')} ${relativePath}`,
           err
         );
 
