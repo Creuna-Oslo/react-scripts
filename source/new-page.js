@@ -9,6 +9,7 @@ const prettier = require('prettier');
 
 const createFolder = require('./utils/create-folder');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
+const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
 const prompt = require('./utils/prompt');
 const renameJSXTransform = require('./transforms/rename-jsx');
@@ -66,8 +67,7 @@ function createMockupPage({
   );
 
   const indexFileContent = prettier.format(
-    `import ${pascalComponentName} from './${componentName}';
-    export default ${pascalComponentName};`,
+    generateIndexFile(componentName),
     prettierConfig
   );
 

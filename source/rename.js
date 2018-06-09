@@ -1,11 +1,11 @@
 /* eslint-env node */
 /* eslint-disable no-console */
 const fs = require('fs');
-const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const prettier = require('prettier');
 const path = require('path');
 
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
+const generateIndexFile = require('./templates/generate-index-file');
 const getComponent = require('./utils/get-component');
 const getConfigs = require('./utils/get-configs');
 const lastSlug = require('./utils/last-slug');
@@ -50,8 +50,6 @@ function renameComponent({
   newComponentName,
   prettierConfig
 }) {
-  const pascalNewComponentName = kebabToPascal(newComponentName);
-
   const indexFilename = 'index.js';
   const indexFilePath = path.join(folderPath, indexFilename);
   const scssFilename = `${componentName}.scss`;
@@ -78,9 +76,7 @@ function renameComponent({
   );
 
   const indexFileContent = prettier.format(
-    `import ${pascalNewComponentName} from './${newComponentName}';
-      
-    export default ${pascalNewComponentName};`,
+    generateIndexFile(newComponentName),
     prettierConfig
   );
 
