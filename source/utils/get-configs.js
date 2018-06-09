@@ -36,11 +36,10 @@ module.exports = function(callback) {
           0,
           filePath.lastIndexOf(path.sep)
         );
-        const projectRootRelative = path.relative(process.cwd(), projectRoot);
 
         return {
-          componentsPath: path.join(projectRootRelative, componentsPath),
-          mockupPath: path.join(projectRootRelative, mockupPath)
+          componentsPath: path.join(projectRoot, componentsPath),
+          mockupPath: path.join(projectRoot, mockupPath)
         };
       } else {
         console.log(
