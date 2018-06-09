@@ -3,28 +3,22 @@
 const chalk = require('chalk');
 const fs = require('fs');
 const prettier = require('prettier');
-const path = require('path');
 
 const ensureCanConvertToStateless = require('./utils/ensure-can-convert-to-stateless');
-const ensureComponentExists = require('./utils/ensure-component-exists');
+const getComponent = require('./utils/get-component');
 const getConfigs = require('./utils/get-configs');
-const prompt = require('./utils/prompt');
 const toStatelessTransform = require('./transforms/to-stateless');
+const writeFile = require('./utils/write-file');
 
-module.exports = function(componentName) {
+module.exports = function(pathOrName) {
   getConfigs(({ eslintrc, prettierConfig, componentsPath }) => {
-    prompt(
-      {
-        componentName: {
-          text: 'Name of component',
-          value: componentName
-        }
-      },
-      ({ componentName }) => {
+    getComponent(
+      { componentsPath, pathOrName },
+      ({ componentName, filePath }) => {
         convertToStateless({
           componentName,
-          componentsPath,
           eslintrc,
+          filePath,
           prettierConfig
         });
       }
@@ -33,40 +27,23 @@ module.exports = function(componentName) {
 
   function convertToStateless({
     componentName,
-    componentsPath,
     eslintrc,
+    filePath,
     prettierConfig
   }) {
-    const fileName = `${componentName}.jsx`;
-    const folderPath = path.join(componentsPath, componentName);
-    const filePath = path.join(folderPath, fileName);
-
-    ensureComponentExists(folderPath, componentName);
-
     const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' });
 
     ensureCanConvertToStateless(fileContent, eslintrc);
 
-    const newFileContent = toStatelessTransform(fileContent, componentName);
+    const newFileContent = prettier.format(
+      toStatelessTransform(fileContent, componentName),
+      prettierConfig
+    );
 
-    fs.writeFile(
+    writeFile(
       filePath,
-      prettier.format(newFileContent, prettierConfig),
-      {},
-      err => {
-        if (err) {
-          console.log(
-            `👻  ${chalk.red('Error writing')} ${chalk.blueBright(
-              `${componentName}.jsx`
-            )}`,
-            err
-          );
-
-          process.exit(1);
-        }
-
-        console.log(`🤖  ${chalk.green(`Beep boop, I'm done!`)}`);
-      }
+      newFileContent,
+      `🤖  ${chalk.green(`Beep boop, I'm done!`)}`
     );
   }
 };
