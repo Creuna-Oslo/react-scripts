@@ -97,6 +97,26 @@ module.exports = function(sourceCode, componentName) {
           .get('id')
           .isIdentifier({ name: pascalComponentName })
       ) {
+        const propTypesProperty = t.classProperty(
+          t.identifier('propTypes'),
+          propTypes
+        );
+        propTypesProperty.static = true;
+
+        const defaultPropsProperty =
+          defaultProps &&
+          t.classProperty(t.identifier('defaultProps'), defaultProps);
+        defaultPropsProperty && (defaultPropsProperty.static = true);
+
+        const renderMethod = t.classMethod(
+          'method',
+          t.identifier('render'),
+          [],
+          t.isBlockStatement(renderBody)
+            ? renderBody
+            : t.blockStatement([t.returnStatement(renderBody)])
+        );
+
         path.replaceWith(
           t.classDeclaration(
             t.identifier(pascalComponentName),
@@ -105,18 +125,9 @@ module.exports = function(sourceCode, componentName) {
               t.identifier('Component')
             ),
             t.classBody(
-              [t.classProperty(t.identifier('propTypes'), propTypes)].concat(
-                defaultProps
-                  ? t.classProperty(t.identifier('defaultProps'), defaultProps)
-                  : [],
-                t.classMethod(
-                  'method',
-                  t.identifier('render'),
-                  [],
-                  t.isBlockStatement(renderBody)
-                    ? renderBody
-                    : t.blockStatement([t.returnStatement(renderBody)])
-                )
+              [propTypesProperty].concat(
+                defaultPropsProperty || [],
+                renderMethod
               )
             ),
             []
