@@ -17,40 +17,20 @@ const renameFile = require('./utils/rename-file');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = function(pathOrName, newComponentName) {
-  getConfigs(({ prettierConfig, componentsPath }) => {
-    getComponent(
-      { pathOrName, componentsPath },
-      ({ componentName, filePath, folderPath }) => {
-        prompt(
-          {
-            newComponentName: {
-              text: 'New name of component',
-              value: newComponentName
-            }
-          },
-          ({ newComponentName }) => {
-            renameComponent({
-              componentName,
-              folderPath,
-              jsxFilePath: filePath,
-              newComponentName,
-              prettierConfig
-            });
-          }
-        );
-      }
-    );
+module.exports = async function(pathOrName, maybeNewName) {
+  const { prettierConfig, componentsPath } = await getConfigs();
+  const { componentName, filePath, folderPath } = await getComponent({
+    pathOrName,
+    componentsPath
   });
-};
+  const { newComponentName } = await prompt({
+    newComponentName: {
+      text: 'New name of component',
+      value: maybeNewName
+    }
+  });
 
-function renameComponent({
-  componentName,
-  folderPath,
-  jsxFilePath,
-  newComponentName,
-  prettierConfig
-}) {
+  const jsxFilePath = filePath;
   const indexFilename = 'index.js';
   const indexFilePath = path.join(folderPath, indexFilename);
   const scssFilename = `${componentName}.scss`;
@@ -105,4 +85,4 @@ function renameComponent({
         shouldRenameFolder && renameFile(folderPath, newComponentName, 'folder')
     )
     .then(() => console.log(`🤖  ${chalk.green(`Beep boop, I'm done!`)}`));
-}
+};

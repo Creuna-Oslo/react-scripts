@@ -15,35 +15,17 @@ const prompt = require('./utils/prompt');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = function(componentName, humanReadableName) {
-  getConfigs(({ prettierConfig, mockupPath }) => {
-    prompt(
-      {
-        componentName: { text: 'Name of page', value: componentName },
-        humanReadableName: {
-          optional: true,
-          text: 'Human readable name (optional)',
-          value: humanReadableName
-        }
-      },
-      ({ componentName, humanReadableName }) => {
-        createMockupPage({
-          componentName,
-          humanReadableName,
-          mockupPath,
-          prettierConfig
-        });
-      }
-    );
+module.exports = async function(maybeComponentName, maybeHumanReadableName) {
+  const { prettierConfig, mockupPath } = await getConfigs();
+  const { componentName, humanReadableName } = await prompt({
+    componentName: { text: 'Name of page', value: maybeComponentName },
+    humanReadableName: {
+      optional: true,
+      text: 'Human readable name (optional)',
+      value: maybeHumanReadableName
+    }
   });
-};
 
-function createMockupPage({
-  componentName,
-  humanReadableName,
-  mockupPath,
-  prettierConfig
-}) {
   const folderPath = path.join(mockupPath, componentName);
   const indexFilePath = path.join(folderPath, 'index.js');
   const jsonFilePath = path.join(folderPath, `${componentName}.json`);
@@ -75,4 +57,4 @@ function createMockupPage({
     .then(() => writeFile(jsxFilePath, jsxFileContent))
     .then(() => writeFile(jsonFilePath, '{}'))
     .then(() => writeFile(indexFilePath, indexFileContent));
-}
+};

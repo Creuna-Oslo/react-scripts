@@ -14,38 +14,20 @@ const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = function(pathOrName, shouldBeStateful) {
-  getConfigs(({ prettierConfig, componentsPath }) => {
-    prompt(
-      {
-        pathOrName: {
-          text: 'Name of component',
-          value: pathOrName
-        },
-        shouldBeStateful: {
-          text: 'Should component have state?',
-          type: Boolean,
-          value: shouldBeStateful
-        }
-      },
-      ({ pathOrName, shouldBeStateful }) => {
-        createComponent({
-          componentsPath,
-          shouldBeStateful,
-          pathOrName,
-          prettierConfig
-        });
-      }
-    );
+module.exports = async function(maybePathOrName, maybeShouldBeStateful) {
+  const { prettierConfig, componentsPath } = await getConfigs();
+  const { pathOrName, shouldBeStateful } = await prompt({
+    pathOrName: {
+      text: 'Name of component',
+      value: maybePathOrName
+    },
+    shouldBeStateful: {
+      text: 'Should component have state?',
+      type: Boolean,
+      value: maybeShouldBeStateful
+    }
   });
-};
 
-function createComponent({
-  componentsPath,
-  shouldBeStateful,
-  pathOrName,
-  prettierConfig
-}) {
   const isPath = pathOrName.indexOf(path.sep) !== -1;
   const componentName = isPath ? lastSlug(pathOrName) : pathOrName;
   const folderPath = path.join(componentsPath, pathOrName);
@@ -87,4 +69,4 @@ function createComponent({
       writeFile(scssFilePath, `.${componentName} {}`);
       writeFile(indexFilePath, indexFileContent);
     });
-}
+};

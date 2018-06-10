@@ -15,16 +15,18 @@ const readline = require('readline');
 
 let rl;
 
-module.exports = (questions = {}, callback) => {
+module.exports = (questions = {}) => {
   rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
 
-  ask(cloneDeep(questions), answers => {
-    rl.close();
+  return new Promise(resolve => {
+    ask(cloneDeep(questions), answers => {
+      rl.close();
 
-    callback(answers);
+      resolve(answers);
+    });
   });
 };
 

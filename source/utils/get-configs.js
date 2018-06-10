@@ -9,8 +9,8 @@ const red = chalk.redBright;
 const removeLastSlug = require('./remove-last-slug');
 
 // Traverse up the folder tree, trying to find config files
-module.exports = function(callback) {
-  Promise.all([
+module.exports = function() {
+  return Promise.all([
     findUp('.eslintrc.json').then(filePath => {
       if (filePath) {
         const eslintrcPath = path.relative(__dirname, filePath);
@@ -51,12 +51,10 @@ module.exports = function(callback) {
         process.exit(1);
       }
     })
-  ]).then(([{ eslintrc, prettierConfig }, { componentsPath, mockupPath }]) =>
-    callback({
-      eslintrc,
-      prettierConfig,
-      componentsPath,
-      mockupPath
-    })
-  );
+  ]).then(([{ eslintrc, prettierConfig }, { componentsPath, mockupPath }]) => ({
+    eslintrc,
+    prettierConfig,
+    componentsPath,
+    mockupPath
+  }));
 };
