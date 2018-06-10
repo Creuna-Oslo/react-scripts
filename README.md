@@ -12,7 +12,7 @@ We recommend running these from [@creuna/cli](https://github.com/Creuna-Oslo/cli
 - stateful: Convert component to stateful
 - stateless: Convert component to stateless
 
-<!-- ### Install
+### Install
 
 ```
 yarn add -g '@creuna/cli'
@@ -21,8 +21,8 @@ yarn add -g '@creuna/cli'
 ### Usage
 
 ```
-creuna <command>
-``` -->
+creuna <script-name>
+```
 
 ### Notes
 
