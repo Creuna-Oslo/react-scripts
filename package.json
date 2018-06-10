@@ -14,7 +14,7 @@
     "source"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava -v"
   },
   "bin": {
     "creuna-component": "./bin/new-component.js",
@@ -30,6 +30,7 @@
     "@babel/traverse": "^7.0.0-beta.49",
     "@creuna/prompt": "^1.0.0",
     "@creuna/utils": "^0.3.4",
+    "ava": "^0.25.0",
     "babel-types": "^6.26.0",
     "chalk": "^2.4.1",
     "eslint": "^4.19.1",

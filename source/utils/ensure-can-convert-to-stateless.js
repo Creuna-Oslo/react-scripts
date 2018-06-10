@@ -16,7 +16,12 @@ linter.defineRules(
   )
 );
 
-module.exports = function(sourceCode, eslintrc) {
+module.exports = function(
+  sourceCode,
+  eslintrc,
+  showLogError = true,
+  exitOnFail = true
+) {
   if (
     !linter.verify(sourceCode, {
       parser: eslintrc.parser,
@@ -26,14 +31,20 @@ module.exports = function(sourceCode, eslintrc) {
       }
     }).length
   ) {
-    console.log(
-      `😭  ${chalk.redBright(`Component can't be converted. Make sure that there is no:
+    if (showLogError) {
+      console.log(
+        `😭  ${chalk.redBright(`Component can't be converted. Make sure that there is no:
   • state or references to state
   • class methods
   • refs
         `)}`
-    );
+      );
+    }
 
-    process.exit(1);
+    if (exitOnFail) {
+      process.exit(1);
+    } else {
+      throw new Error("Component can't be converted");
+    }
   }
 };
