@@ -3,13 +3,13 @@
 const chalk = require('chalk');
 const path = require('path');
 const prettier = require('prettier');
+const prompt = require('@creuna/prompt');
 
 const createFolder = require('./utils/create-folder');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
 const lastSlug = require('./utils/last-slug');
-const prompt = require('./utils/prompt');
 const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');

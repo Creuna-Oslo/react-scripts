@@ -6,12 +6,12 @@ const fsExtra = require('fs-extra');
 const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const path = require('path');
 const prettier = require('prettier');
+const prompt = require('@creuna/prompt');
 
 const createFolder = require('./utils/create-folder');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
-const prompt = require('./utils/prompt');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 

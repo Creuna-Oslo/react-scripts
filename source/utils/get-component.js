@@ -3,8 +3,8 @@
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
+const prompt = require('@creuna/prompt');
 
-const prompt = require('./prompt');
 const removeLastSlug = require('./remove-last-slug');
 
 function isFullPath(inputPath) {
