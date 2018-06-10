@@ -1,10 +1,16 @@
-# cli
+# react-scripts
 
-`@creuna/cli` provides a unified interface for:
+Scripts for creating and edting React components.
 
-- [create-react-app](https://github.com/Creuna-Oslo/create-react-app)
-- [react-scripts](https://github.com/Creuna-Oslo/react-scripts)
-- [react-components](https://github.com/Creuna-Oslo/react-components)
+We recommend running these from [@creuna/cli](https://github.com/Creuna-Oslo/cli)
+
+### Scripts
+
+- component: Create new component
+- page: Create new mockup page
+- rename: Rename component
+- stateful: Convert component to stateful
+- stateless: Convert component to stateless
 
 <!-- ### Install
 
@@ -15,12 +21,12 @@ yarn add -g '@creuna/cli'
 ### Usage
 
 ```
-creuna
+creuna <command>
 ``` -->
 
 ### Notes
 
-All commands except `creuna new` require a `.creunarc.json` and a `.eslintr.json` in your project root. If you run `creuna new` you'll get these for free. 😎
+The scripts require a `.creunarc.json` and a `.eslintr.json` in your project root.
 
 #### .creunarc.json
 
