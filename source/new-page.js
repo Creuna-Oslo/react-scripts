@@ -15,8 +15,12 @@ const getConfigs = require('./utils/get-configs');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(maybeComponentName, maybeHumanReadableName) {
-  const { prettierConfig, mockupPath } = await getConfigs();
+module.exports = async function(
+  maybeComponentName,
+  maybeHumanReadableName,
+  mockupPath
+) {
+  const { prettierConfig } = await getConfigs();
   const { componentName, humanReadableName } = await prompt({
     componentName: { text: 'Name of page', value: maybeComponentName },
     humanReadableName: {

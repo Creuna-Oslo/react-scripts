@@ -10,8 +10,8 @@ const getConfigs = require('./utils/get-configs');
 const toStatelessTransform = require('./transforms/to-stateless');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(pathOrName) {
-  const { eslintrc, prettierConfig, componentsPath } = await getConfigs();
+module.exports = async function(pathOrName, componentsPath) {
+  const { eslintrc, prettierConfig } = await getConfigs();
   const { componentName, filePath } = await getComponent({
     componentsPath,
     pathOrName

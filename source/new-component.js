@@ -14,8 +14,12 @@ const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(maybePathOrName, maybeShouldBeStateful) {
-  const { prettierConfig, componentsPath } = await getConfigs();
+module.exports = async function(
+  maybePathOrName,
+  maybeShouldBeStateful,
+  componentsPath
+) {
+  const { prettierConfig } = await getConfigs();
   const { pathOrName, shouldBeStateful } = await prompt({
     pathOrName: {
       text: 'Name of component',

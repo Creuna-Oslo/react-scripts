@@ -17,8 +17,8 @@ const renameFile = require('./utils/rename-file');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(pathOrName, maybeNewName) {
-  const { prettierConfig, componentsPath } = await getConfigs();
+module.exports = async function(pathOrName, maybeNewName, componentsPath) {
+  const { prettierConfig } = await getConfigs();
   const { componentName, filePath, folderPath } = await getComponent({
     pathOrName,
     componentsPath
