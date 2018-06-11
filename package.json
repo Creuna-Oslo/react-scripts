@@ -1,6 +1,6 @@
 {
   "name": "@creuna/react-scripts",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Utility scripts for React projects",
   "author": "Asbjørn Hegdahl <asbjorn.hegdahl@creuna.no>",
   "contributors": [
@@ -15,13 +15,6 @@
   ],
   "scripts": {
     "test": "ava -v"
-  },
-  "bin": {
-    "creuna-component": "./bin/new-component.js",
-    "creuna-page": "./bin/new-page.js",
-    "creuna-rename": "./bin/rename.js",
-    "creuna-stateful": "./bin/to-stateful.js",
-    "creuna-stateless": "./bin/to-stateless.js"
   },
   "license": "MIT",
   "dependencies": {

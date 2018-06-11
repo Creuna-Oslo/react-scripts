@@ -4,14 +4,6 @@ Scripts for creating and edting React components.
 
 We recommend running these from [@creuna/cli](https://github.com/Creuna-Oslo/cli)
 
-### Scripts
-
-- component: Create new component
-- page: Create new mockup page
-- rename: Rename component
-- stateful: Convert component to stateful
-- stateless: Convert component to stateless
-
 ### Install
 
 ```
@@ -23,6 +15,14 @@ yarn add -g '@creuna/cli'
 ```
 creuna <script-name>
 ```
+
+### Scripts
+
+- component: Create new component
+- page: Create new mockup page
+- rename: Rename component
+- stateful: Convert component to stateful
+- stateless: Convert component to stateless
 
 ### Notes
 
