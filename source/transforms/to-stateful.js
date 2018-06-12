@@ -4,6 +4,11 @@ const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const t = require('babel-types');
 
+const {
+  isObjectMemberProperty,
+  isDefinedInNestedScope
+} = require('./babel-utils');
+
 module.exports = function(sourceCode, componentName) {
   const pascalComponentName = kebabToPascal(componentName);
 
@@ -54,41 +59,46 @@ module.exports = function(sourceCode, componentName) {
     t.identifier('props')
   );
 
-  const isObjectMemberProperty = path => {
-    return (
-      t.isMemberExpression(path.parent) &&
-      path.parentPath.get('property') === path
-    );
-  };
-
   // Traverse render function and prepend prop references with 'this.props'
   traverse(syntaxTree, {
     VariableDeclarator(path) {
       if (path.get('id').isIdentifier({ name: pascalComponentName })) {
         const body = path.get('init').get('body');
+        const outerScopeUid = body.scope.uid;
 
         body.traverse({
-          // Deal with arrow functions inside render
+          // Deal with props and variables in arrow functions within render
           ArrowFunctionExpression(path) {
             path.traverse({
+              // Handle variables in nested scopes
               Identifier(path) {
                 if (
-                  !isObjectMemberProperty(path) &&
-                  !path.scope.hasOwnBinding(path.node.name)
+                  isObjectMemberProperty(path) ||
+                  path.scope.hasOwnBinding(path.node.name) ||
+                  !propNames.includes(path.node.name)
                 ) {
+                  return;
+                }
+
+                // Check if the identifier exists in a parent scope that is different from the component scope
+                if (
+                  isDefinedInNestedScope(path, path.node.name, outerScopeUid)
+                ) {
+                  // Prepend with 'this.props'
                   path.replaceWith(t.memberExpression(thisDotProps, path.node));
                 }
               }
             });
+
             // Skip traversing children further to avoid scope issues
             path.skip();
           },
 
-          // Replace 'propName' with 'this.props.propName'
+          // Replace 'propName' with 'this.props.propName' in the outer component scope
           Identifier(path) {
             if (
               !isObjectMemberProperty(path) &&
-              propNames.indexOf(path.node.name) !== -1
+              propNames.includes(path.node.name)
             ) {
               path.replaceWith(t.memberExpression(thisDotProps, path.node));
             }

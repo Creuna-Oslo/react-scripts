@@ -24,7 +24,7 @@ class ComponentStateful extends React.Component {
       <div
         className={cn('component-stateful', {
           'component-stateful-class': this.props.bool,
-          'some-component': true
+          'some-component-stateful': true
         })}
       >
         <p>{text}</p>

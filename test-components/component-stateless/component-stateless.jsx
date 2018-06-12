@@ -6,14 +6,22 @@ const ComponentStateless = ({ array, text, bool, object }) => {
   const test = 'test';
   return !bool ? null : (
     <div
-      className={cn('component', {
-        'component-class': bool,
-        'some-component': true
+      className={cn('component-stateless', {
+        'component-stateless-class': bool,
+        'some-component-stateless': true
       })}
     >
-      {array.map((object, text) => (
+      {array.map(({ array, object, text }) => (
         <p key={bool} text={text}>
           {object.property}
+          {array.map(object => {
+            if (object.property) {
+              const object = array;
+              return <span key={bool}>{object}</span>;
+            }
+
+            return null;
+          })}
         </p>
       ))}
       <p>{text}</p>

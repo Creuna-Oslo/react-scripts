@@ -24,9 +24,9 @@ class ComponentStatefulNoTransform extends React.Component {
 
     return !this.props.src ? null : (
       <div
-        className={cn('component-stateful', {
-          'component-stateful-class': this.props.bool,
-          'some-component': true
+        className={cn('component-stateful-no-transform', {
+          'component-stateful-no-transform-class': this.props.bool,
+          'some-component-no-transform': true
         })}
       >
         <p>{text}</p>
