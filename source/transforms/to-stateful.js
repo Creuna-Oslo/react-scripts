@@ -22,17 +22,15 @@ module.exports = function(sourceCode, componentName) {
     // Get render content
     VariableDeclarator(path) {
       if (path.get('id').isIdentifier({ name: pascalComponentName })) {
-        path.traverse({
-          ArrowFunctionExpression(path) {
-            renderBody = path.node.body;
-          }
-        });
+        propNames = path.node.init.params[0].properties.map(
+          objectProperty => objectProperty.key.name
+        );
+        renderBody = path.node.init.body;
       }
     },
 
     AssignmentExpression(path) {
       const left = path.get('left');
-      const right = path.get('right');
 
       // get propTypes and defaultProps
       if (t.isMemberExpression(left)) {
@@ -44,12 +42,6 @@ module.exports = function(sourceCode, componentName) {
 
           if (left.get('property').isIdentifier({ name: 'propTypes' })) {
             propTypes = path.node.right;
-
-            right.traverse({
-              ObjectProperty(path) {
-                propNames.push(path.node.key.name);
-              }
-            });
             path.remove();
           }
         }
@@ -57,48 +49,49 @@ module.exports = function(sourceCode, componentName) {
     }
   });
 
+  const thisDotProps = t.memberExpression(
+    t.thisExpression(),
+    t.identifier('props')
+  );
+
+  const isObjectMemberProperty = path => {
+    return (
+      t.isMemberExpression(path.parent) &&
+      path.parentPath.get('property') === path
+    );
+  };
+
+  // Traverse render function and prepend prop references with 'this.props'
   traverse(syntaxTree, {
-    // Get render content
     VariableDeclarator(path) {
       if (path.get('id').isIdentifier({ name: pascalComponentName })) {
-        path.traverse({
+        const body = path.get('init').get('body');
+
+        body.traverse({
+          // Deal with arrow functions inside render
           ArrowFunctionExpression(path) {
-            path.get('body').traverse({
-              // Replace 'propName' with 'this.props.propName'
+            path.traverse({
               Identifier(path) {
                 if (
-                  !t.isMemberExpression(path.parent) &&
-                  propNames.indexOf(path.node.name) !== -1
+                  !isObjectMemberProperty(path) &&
+                  !path.scope.hasOwnBinding(path.node.name)
                 ) {
-                  path.replaceWith(
-                    t.memberExpression(
-                      t.memberExpression(
-                        t.thisExpression(),
-                        t.identifier('props')
-                      ),
-                      path.node
-                    )
-                  );
-                }
-              },
-
-              // Replace 'objectProp.x' with 'this.props.objectProp.x'
-              MemberExpression(path) {
-                if (
-                  path.get('object').isIdentifier() &&
-                  propNames.indexOf(path.node.object.name) !== -1
-                ) {
-                  path
-                    .get('object')
-                    .replaceWith(
-                      t.memberExpression(
-                        t.thisExpression(),
-                        t.identifier('props')
-                      )
-                    );
+                  path.replaceWith(t.memberExpression(thisDotProps, path.node));
                 }
               }
             });
+            // Skip traversing children further to avoid scope issues
+            path.skip();
+          },
+
+          // Replace 'propName' with 'this.props.propName'
+          Identifier(path) {
+            if (
+              !isObjectMemberProperty(path) &&
+              propNames.indexOf(path.node.name) !== -1
+            ) {
+              path.replaceWith(t.memberExpression(thisDotProps, path.node));
+            }
           }
         });
       }
