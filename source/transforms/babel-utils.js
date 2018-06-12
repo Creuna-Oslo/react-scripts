@@ -5,14 +5,14 @@ const t = require('babel-types');
 // identifierName: string
 // outermostScopeUid: number (Higher number means deeper nesting)
 function isDefinedInNestedScope(path, identifierName, outermostScopeUid) {
-  return !path.findParent(
+  return path.findParent(
     parent =>
       parent.scope.hasOwnBinding(identifierName) &&
       parent.scope.uid > outermostScopeUid
   );
 }
 
-// Check whether the path is the 'property' of a MemberExpression
+// Checks whether the path is the 'property' of a MemberExpression
 function isObjectMemberProperty(path) {
   return (
     t.isMemberExpression(path.parent) &&

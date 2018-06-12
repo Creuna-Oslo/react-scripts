@@ -70,19 +70,13 @@ module.exports = function(sourceCode, componentName) {
           // Deal with props and variables in arrow functions within render
           ArrowFunctionExpression(path) {
             path.traverse({
-              // Handle variables in nested scopes
+              // Handle props in nested scopes
               Identifier(path) {
                 if (
-                  isObjectMemberProperty(path) ||
-                  path.scope.hasOwnBinding(path.node.name) ||
-                  !propNames.includes(path.node.name)
-                ) {
-                  return;
-                }
-
-                // Check if the identifier exists in a parent scope that is different from the component scope
-                if (
-                  isDefinedInNestedScope(path, path.node.name, outerScopeUid)
+                  propNames.includes(path.node.name) &&
+                  !path.scope.hasOwnBinding(path.node.name) &&
+                  !isObjectMemberProperty(path) &&
+                  !isDefinedInNestedScope(path, path.node.name, outerScopeUid)
                 ) {
                   // Prepend with 'this.props'
                   path.replaceWith(t.memberExpression(thisDotProps, path.node));
