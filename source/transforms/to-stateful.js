@@ -57,7 +57,6 @@ module.exports = function(sourceCode, componentName) {
     }
   });
 
-  // Replace 'propName' with 'this.props.propName'
   traverse(syntaxTree, {
     // Get render content
     VariableDeclarator(path) {
@@ -65,6 +64,7 @@ module.exports = function(sourceCode, componentName) {
         path.traverse({
           ArrowFunctionExpression(path) {
             path.get('body').traverse({
+              // Replace 'propName' with 'this.props.propName'
               Identifier(path) {
                 if (
                   !t.isMemberExpression(path.parent) &&
@@ -79,6 +79,23 @@ module.exports = function(sourceCode, componentName) {
                       path.node
                     )
                   );
+                }
+              },
+
+              // Replace 'objectProp.x' with 'this.props.objectProp.x'
+              MemberExpression(path) {
+                if (
+                  path.get('object').isIdentifier() &&
+                  propNames.indexOf(path.node.object.name) !== -1
+                ) {
+                  path
+                    .get('object')
+                    .replaceWith(
+                      t.memberExpression(
+                        t.thisExpression(),
+                        t.identifier('props')
+                      )
+                    );
                 }
               }
             });
