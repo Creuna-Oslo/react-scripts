@@ -5,14 +5,17 @@ const test = require('ava');
 const renameTransform = require('../source/transforms/rename-jsx');
 
 const statefulComponentSource = fs.readFileSync(
-  path.join(__dirname, '../test-components/image-stateful/image-stateful.jsx'),
+  path.join(
+    __dirname,
+    '../test-components/component-stateful/component-stateful.jsx'
+  ),
   'utf-8'
 );
 
 const statelessComponentSource = fs.readFileSync(
   path.join(
     __dirname,
-    '../test-components/image-stateless/image-stateless.jsx'
+    '../test-components/component-stateless/component-stateless.jsx'
   ),
   'utf-8'
 );
@@ -20,8 +23,8 @@ const statelessComponentSource = fs.readFileSync(
 test('Stateful component', t => {
   const transformedSource = renameTransform(
     statefulComponentSource,
-    'image-stateful',
-    'image'
+    'component-stateful',
+    'new-component'
   );
 
   t.snapshot(transformedSource);
@@ -30,8 +33,8 @@ test('Stateful component', t => {
 test('Stateless component', t => {
   const transformedSource = renameTransform(
     statelessComponentSource,
-    'image-stateless',
-    'image'
+    'component-stateless',
+    'new-component'
   );
 
   t.snapshot(transformedSource);

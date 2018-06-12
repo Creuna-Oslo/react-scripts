@@ -8,7 +8,7 @@ const eslintrc = require('../.eslintrc.json');
 const statefulComponentSource = fs.readFileSync(
   path.join(
     __dirname,
-    '../test-components/image-stateful-no-transform/image-stateful-no-transform.jsx'
+    '../test-components/component-stateful-no-transform/component-stateful-no-transform.jsx'
   ),
   'utf-8'
 );
