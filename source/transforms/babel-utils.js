@@ -1,13 +1,13 @@
 const t = require('babel-types');
 
-const thisDotProps = t.memberExpression(
-  t.thisExpression(),
-  t.identifier('props')
-);
-
-// Replaces an Identifier node with a MemberExpression node for 'this.props'
+// Replaces 'x' with 'this.props.x'
 function addThisDotProps(path) {
-  path.replaceWith(t.memberExpression(thisDotProps, path.node));
+  path.replaceWith(
+    t.memberExpression(
+      t.memberExpression(t.thisExpression(), t.identifier('props')),
+      path.node
+    )
+  );
 }
 
 // Traverses the tree upward to see if the identifier is defined in a higher scope that is nested within outermostScope.
