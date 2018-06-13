@@ -5,8 +5,10 @@ const traverse = require('@babel/traverse').default;
 const t = require('babel-types');
 
 const {
+  addThisDotProps,
   isObjectMemberProperty,
-  isDefinedInNestedScope
+  isDefinedInNestedScope,
+  isStatelessComponentDeclaration
 } = require('./babel-utils');
 
 module.exports = function(sourceCode, componentName) {
@@ -22,9 +24,12 @@ module.exports = function(sourceCode, componentName) {
     defaultProps,
     propNames = [];
 
+  const isPropName = identifierPath =>
+    propNames.includes(identifierPath.node.name);
+
   // Get render, propTypes and defaultProps
   traverse(syntaxTree, {
-    // Get render content
+    // Get render content and prop names
     VariableDeclarator(path) {
       if (path.get('id').isIdentifier({ name: pascalComponentName })) {
         propNames = path.node.init.params[0].properties.map(
@@ -54,11 +59,6 @@ module.exports = function(sourceCode, componentName) {
     }
   });
 
-  const thisDotProps = t.memberExpression(
-    t.thisExpression(),
-    t.identifier('props')
-  );
-
   // Traverse render function and prepend prop references with 'this.props'
   traverse(syntaxTree, {
     VariableDeclarator(path) {
@@ -67,34 +67,20 @@ module.exports = function(sourceCode, componentName) {
         const outerScopeUid = body.scope.uid;
 
         body.traverse({
-          // Deal with props and variables in arrow functions within render
-          ArrowFunctionExpression(path) {
-            path.traverse({
-              // Handle props in nested scopes
-              Identifier(path) {
-                if (
-                  propNames.includes(path.node.name) &&
-                  !path.scope.hasOwnBinding(path.node.name) &&
-                  !isObjectMemberProperty(path) &&
-                  !isDefinedInNestedScope(path, path.node.name, outerScopeUid)
-                ) {
-                  // Prepend with 'this.props'
-                  path.replaceWith(t.memberExpression(thisDotProps, path.node));
-                }
-              }
-            });
-
-            // Skip traversing children further to avoid scope issues
-            path.skip();
-          },
-
-          // Replace 'propName' with 'this.props.propName' in the outer component scope
           Identifier(path) {
-            if (
-              !isObjectMemberProperty(path) &&
-              propNames.includes(path.node.name)
+            if (!isPropName(path) || isObjectMemberProperty(path)) {
+              return;
+            }
+
+            if (path.scope.uid === outerScopeUid) {
+              // Prepend 'this.props' to all prop names in outermost component scope
+              addThisDotProps(path);
+            } else if (
+              !path.scope.hasOwnBinding(path.node.name) &&
+              !isDefinedInNestedScope(path, outerScopeUid)
             ) {
-              path.replaceWith(t.memberExpression(thisDotProps, path.node));
+              // Prepend 'this.props' to prop names in nested scopes unless the scope has local bindings for the name
+              addThisDotProps(path);
             }
           }
         });
@@ -105,17 +91,10 @@ module.exports = function(sourceCode, componentName) {
   // Replace arrow function with class component
   traverse(syntaxTree, {
     VariableDeclaration(path) {
-      if (
-        path
-          .get('declarations')[0]
-          .get('id')
-          .isIdentifier({ name: pascalComponentName })
-      ) {
-        const propTypesProperty = t.classProperty(
-          t.identifier('propTypes'),
-          propTypes
-        );
-        propTypesProperty.static = true;
+      if (isStatelessComponentDeclaration(path, pascalComponentName)) {
+        const propTypesProperty =
+          propTypes && t.classProperty(t.identifier('propTypes'), propTypes);
+        propTypesProperty && (propTypesProperty.static = true);
 
         const defaultPropsProperty =
           defaultProps &&
@@ -139,7 +118,8 @@ module.exports = function(sourceCode, componentName) {
               t.identifier('Component')
             ),
             t.classBody(
-              [propTypesProperty].concat(
+              [].concat(
+                propTypesProperty || [],
                 defaultPropsProperty || [],
                 renderMethod
               )
