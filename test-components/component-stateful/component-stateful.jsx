@@ -21,7 +21,7 @@ class ComponentStateful extends React.Component {
     const props = this.props;
     const test = 'test';
 
-    return !this.props.src ? null : (
+    return !this.props.bool ? null : (
       <div
         className={cn('component-stateful', {
           'component-stateful-class': props.bool,

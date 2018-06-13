@@ -36,7 +36,7 @@ module.exports = function(sourceCode, componentName) {
             }
           },
 
-          // Remove destructuring assignment from this.props
+          // Remove destructuring assignments of this.props
           VariableDeclaration(path) {
             const declarator = path.get('declarations')[0];
 
@@ -67,6 +67,7 @@ module.exports = function(sourceCode, componentName) {
         path.traverse({
           ObjectProperty(path) {
             propNames.push(path.node.key);
+            path.skip(); // Skip traversal of nested object properties
           }
         });
       }
