@@ -4,6 +4,8 @@ const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const t = require('babel-types');
 
+const { isDestructuredPropsReference } = require('./babel-utils');
+
 module.exports = function(sourceCode, componentName) {
   const pascalComponentName = kebabToPascal(componentName);
 
@@ -23,7 +25,6 @@ module.exports = function(sourceCode, componentName) {
     ClassMethod(path) {
       if (path.get('key').isIdentifier({ name: 'render' })) {
         path.traverse({
-          // Replace this.props.x with x
           MemberExpression(path) {
             const object = path.get('object');
 
@@ -32,11 +33,19 @@ module.exports = function(sourceCode, componentName) {
               object.get('object').isThisExpression() &&
               object.get('property').isIdentifier({ name: 'props' })
             ) {
+              // Replace this.props.x with x
+              path.replaceWith(path.node.property);
+            } else if (
+              object.isIdentifier() &&
+              isDestructuredPropsReference(path)
+            ) {
+              // Replace props.x with x if a variable 'props' exists and is assigned the value of 'this.props' or 'this'
               path.replaceWith(path.node.property);
             }
-          },
+          }
+        });
 
-          // Remove destructuring assignments of this.props
+        path.traverse({
           VariableDeclaration(path) {
             const declarator = path.get('declarations')[0];
 
@@ -47,8 +56,12 @@ module.exports = function(sourceCode, componentName) {
                 expression.get('object').isThisExpression() &&
                 expression.get('property').isIdentifier({ name: 'props' })
               ) {
+                // Remove destructuring assignments of 'this.props'
                 path.remove();
               }
+            } else if (declarator.get('init').isThisExpression()) {
+              // Remove destructuring assignments of 'this'
+              path.remove();
             }
           }
         });

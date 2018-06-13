@@ -18,7 +18,7 @@ class ComponentStateful extends React.Component {
 
   render() {
     const { text } = this.props;
-    const props = this.props;
+    const { props } = this;
     const test = 'test';
 
     return !this.props.bool ? null : (

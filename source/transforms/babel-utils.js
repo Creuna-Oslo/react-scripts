@@ -22,6 +22,22 @@ function isDefinedInNestedScope(path, outermostScopeUid) {
   );
 }
 
+// Checks whether a binding exists for an 'object' property of a MemberExpression, and if that binding is a reference to 'this.props' or 'this'. 'path' must be a MemberExpression NodePath.
+function isDestructuredPropsReference(path) {
+  const object = path.get('object');
+  if (!path.scope.hasOwnBinding(object.node.name)) {
+    return;
+  }
+
+  const bindingValue = path.scope.bindings[object.node.name].path.get('init');
+
+  return (
+    (bindingValue.get('object').isThisExpression() &&
+      bindingValue.get('property').isIdentifier({ name: 'props' })) ||
+    bindingValue.isThisExpression()
+  );
+}
+
 // Checks whether the path is the 'property' of a MemberExpression
 function isObjectMemberProperty(path) {
   return (
@@ -40,6 +56,7 @@ function isStatelessComponentDeclaration(path, pascalComponentName) {
 module.exports = {
   addThisDotProps,
   isDefinedInNestedScope,
+  isDestructuredPropsReference,
   isObjectMemberProperty,
   isStatelessComponentDeclaration
 };
