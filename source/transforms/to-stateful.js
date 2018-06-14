@@ -4,6 +4,13 @@ const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const t = require('babel-types');
 
+const {
+  addThisDotProps,
+  isObjectMemberProperty,
+  isDefinedInNestedScope,
+  isStatelessComponentDeclaration
+} = require('./babel-utils');
+
 module.exports = function(sourceCode, componentName) {
   const pascalComponentName = kebabToPascal(componentName);
 
@@ -17,22 +24,23 @@ module.exports = function(sourceCode, componentName) {
     defaultProps,
     propNames = [];
 
+  const isPropName = identifierPath =>
+    propNames.includes(identifierPath.node.name);
+
   // Get render, propTypes and defaultProps
   traverse(syntaxTree, {
-    // Get render content
+    // Get render content and prop names
     VariableDeclarator(path) {
       if (path.get('id').isIdentifier({ name: pascalComponentName })) {
-        path.traverse({
-          ArrowFunctionExpression(path) {
-            renderBody = path.node.body;
-          }
-        });
+        propNames = path.node.init.params[0].properties.map(
+          objectProperty => objectProperty.key.name
+        );
+        renderBody = path.node.init.body;
       }
     },
 
     AssignmentExpression(path) {
       const left = path.get('left');
-      const right = path.get('right');
 
       // get propTypes and defaultProps
       if (t.isMemberExpression(left)) {
@@ -44,12 +52,6 @@ module.exports = function(sourceCode, componentName) {
 
           if (left.get('property').isIdentifier({ name: 'propTypes' })) {
             propTypes = path.node.right;
-
-            right.traverse({
-              ObjectProperty(path) {
-                propNames.push(path.node.key.name);
-              }
-            });
             path.remove();
           }
         }
@@ -57,31 +59,29 @@ module.exports = function(sourceCode, componentName) {
     }
   });
 
-  // Replace 'propName' with 'this.props.propName'
+  // Traverse render function and prepend prop references with 'this.props'
   traverse(syntaxTree, {
-    // Get render content
     VariableDeclarator(path) {
       if (path.get('id').isIdentifier({ name: pascalComponentName })) {
-        path.traverse({
-          ArrowFunctionExpression(path) {
-            path.get('body').traverse({
-              Identifier(path) {
-                if (
-                  !t.isMemberExpression(path.parent) &&
-                  propNames.indexOf(path.node.name) !== -1
-                ) {
-                  path.replaceWith(
-                    t.memberExpression(
-                      t.memberExpression(
-                        t.thisExpression(),
-                        t.identifier('props')
-                      ),
-                      path.node
-                    )
-                  );
-                }
-              }
-            });
+        const body = path.get('init').get('body');
+        const outerScopeUid = body.scope.uid;
+
+        body.traverse({
+          Identifier(path) {
+            if (!isPropName(path) || isObjectMemberProperty(path)) {
+              return;
+            }
+
+            if (path.scope.uid === outerScopeUid) {
+              // Prepend 'this.props' to all prop names in outermost component scope
+              addThisDotProps(path);
+            } else if (
+              !path.scope.hasOwnBinding(path.node.name) &&
+              !isDefinedInNestedScope(path, outerScopeUid)
+            ) {
+              // Prepend 'this.props' to prop names in nested scopes unless the scope has local bindings for the name
+              addThisDotProps(path);
+            }
           }
         });
       }
@@ -91,17 +91,10 @@ module.exports = function(sourceCode, componentName) {
   // Replace arrow function with class component
   traverse(syntaxTree, {
     VariableDeclaration(path) {
-      if (
-        path
-          .get('declarations')[0]
-          .get('id')
-          .isIdentifier({ name: pascalComponentName })
-      ) {
-        const propTypesProperty = t.classProperty(
-          t.identifier('propTypes'),
-          propTypes
-        );
-        propTypesProperty.static = true;
+      if (isStatelessComponentDeclaration(path, pascalComponentName)) {
+        const propTypesProperty =
+          propTypes && t.classProperty(t.identifier('propTypes'), propTypes);
+        propTypesProperty && (propTypesProperty.static = true);
 
         const defaultPropsProperty =
           defaultProps &&
@@ -125,7 +118,8 @@ module.exports = function(sourceCode, componentName) {
               t.identifier('Component')
             ),
             t.classBody(
-              [propTypesProperty].concat(
+              [].concat(
+                propTypesProperty || [],
                 defaultPropsProperty || [],
                 renderMethod
               )

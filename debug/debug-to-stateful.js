@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const test = require('ava');
 
 const statefulTransform = require('../source/transforms/to-stateful');
 
@@ -12,11 +11,4 @@ const statelessComponentSource = fs.readFileSync(
   'utf-8'
 );
 
-test('Works', t => {
-  const transformedSource = statefulTransform(
-    statelessComponentSource,
-    'component-stateless'
-  );
-
-  t.snapshot(transformedSource);
-});
+statefulTransform(statelessComponentSource, 'component-stateless');
