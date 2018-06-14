@@ -22,15 +22,23 @@ module.exports = function(
   showLogError = true,
   exitOnFail = true
 ) {
-  if (
-    !linter.verify(sourceCode, {
-      parser: eslintrc.parser,
-      parserOptions: eslintrc.parserOptions,
-      rules: {
-        'react/prefer-stateless-function': 1
-      }
-    }).length
-  ) {
+  const errors = linter.verify(sourceCode, {
+    parser: 'babel-eslint',
+    parserOptions: eslintrc.parserOptions,
+    rules: {
+      'react/prefer-stateless-function': 1
+    }
+  });
+  const fatalError = errors.find(error => error.fatal);
+
+  if (fatalError) {
+    console.log(chalk.redBright(fatalError.message));
+    console.log(chalk.redBright('Aborting.'));
+    process.exit(0);
+  }
+
+  // If the component can be converted, eslint will return a warning that the component should be converted. If there are no errors, the component can't be converted.
+  if (!errors.length) {
     if (showLogError) {
       console.log(
         `😭  ${chalk.redBright(`Component can't be converted. Make sure that there is no:
