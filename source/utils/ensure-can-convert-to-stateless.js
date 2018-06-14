@@ -37,7 +37,7 @@ module.exports = function(
     process.exit(0);
   }
 
-  // If the component can be converted, eslint will return a warning that the component should be converted. If there are no errors, the component can't be converted.
+  // If the component can be converted, eslint will return a warning that the component should be converted. If there are no warnings, the component can't be converted.
   if (!errors.length) {
     if (showLogError) {
       console.log(
