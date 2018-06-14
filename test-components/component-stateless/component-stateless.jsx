@@ -4,6 +4,13 @@ import cn from 'classnames';
 
 const ComponentStateless = ({ array, text, bool, object }) => {
   const test = 'test';
+  const something = array.map(({ text }) => <p>{text}</p>);
+
+  if (object) {
+    const object = something;
+    const somethingElse = object.property;
+  }
+
   return !bool ? null : (
     <div
       className={cn('component-stateless', {

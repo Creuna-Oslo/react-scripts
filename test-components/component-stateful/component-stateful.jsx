@@ -4,6 +4,7 @@ import cn from 'classnames';
 
 class ComponentStateful extends React.Component {
   static propTypes = {
+    array: PropTypes.array,
     text: PropTypes.string,
     bool: PropTypes.bool,
     object: PropTypes.shape({
@@ -11,6 +12,7 @@ class ComponentStateful extends React.Component {
     })
   };
   static defaultProps = {
+    array: [],
     text: 'hello',
     bool: true,
     object: {}
@@ -20,6 +22,11 @@ class ComponentStateful extends React.Component {
     const { text } = this.props;
     const { props } = this;
     const test = 'test';
+
+    if (this.props.object) {
+      const object = {};
+      const somethingElse = object.property;
+    }
 
     return !this.props.bool ? null : (
       <div
