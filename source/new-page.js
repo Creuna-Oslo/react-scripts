@@ -12,6 +12,7 @@ const createFolder = require('./utils/create-folder');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
+const renameImportTransform = require('./transforms/rename-import-json');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
@@ -46,9 +47,20 @@ module.exports = async function(
     { encoding: 'utf-8' }
   );
 
+  const renamedSource = renameJSXTransform(
+    templateContent,
+    'component',
+    componentName
+  );
+
+  const sourceWithRenamedImport = renameImportTransform(
+    renamedSource,
+    componentName
+  );
+
   const jsxFileContent = prettier.format(
     `// ${humanReadableName || pascalComponentName}\n` +
-      renameJSXTransform(templateContent, 'Component', componentName),
+      sourceWithRenamedImport,
     prettierConfig
   );
 
