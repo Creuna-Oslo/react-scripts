@@ -1,34 +1,30 @@
 # react-scripts
 
-Scripts for creating and edting React components.
+Functions for creating and editing React components.
 
-We recommend running these from [@creuna/cli](https://github.com/Creuna-Oslo/cli)
+We recommend running these from [@creuna/cli](https://github.com/Creuna-Oslo/cli).
 
-### Install
+If you want to use these functions from JavaScript, this is the right module for you.
 
+## API
+
+This module exports one object containing all the functions.
+
+```javascript
+{
+  newComponent, // Create new component
+  newPage, // Create new mockup page
+  rename, // Rename component
+  toStateful, // Convert component to stateful
+  toStateless; // Convert component to stateless
+}
 ```
-yarn add -g '@creuna/cli'
-```
 
-### Usage
+## Notes
 
-```
-creuna <script-name>
-```
+The functions require a `.creunarc.json` and a `.eslintrc.json` in your project root.
 
-### Scripts
-
-- component: Create new component
-- page: Create new mockup page
-- rename: Rename component
-- stateful: Convert component to stateful
-- stateless: Convert component to stateless
-
-### Notes
-
-The scripts require a `.creunarc.json` and a `.eslintr.json` in your project root.
-
-#### .creunarc.json
+### .creunarc.json
 
 ```json
 {
