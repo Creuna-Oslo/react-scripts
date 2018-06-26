@@ -39,37 +39,36 @@ module.exports = function({
       prettierConfig
     );
 
-    ensureEmptyFolder(folderPath)
-      .then(() => fsExtra.ensureDir(folderPath))
-      .then(() =>
-        readFile(shouldBeStateful ? templates.stateful : templates.stateless)
-      )
-      .then(jsxFileContent =>
-        // Hard coded string name because that's what the template components are called
-        prettier.format(
-          renameTransform(jsxFileContent, 'component', componentName),
-          prettierConfig
-        )
-      )
-      .then(newJsxFileContent =>
-        Promise.all([
-          writeFile(jsxFilePath, newJsxFileContent),
-          writeFile(scssFilePath, `.${componentName} {}`),
-          writeFile(indexFilePath, indexFileContent)
-        ])
-      )
-      .then(messages => {
-        resolve({
-          messages: messages.concat({
-            emoji: '🎉',
-            text: `Created ${
-              shouldBeStateful ? 'stateful' : 'stateless'
-            } component ${chalk.greenBright(componentName)}`
-          })
-        });
-      })
-      .catch(error => {
-        reject(error.message);
+    try {
+      await ensureEmptyFolder(folderPath);
+      await fsExtra.ensureDir(folderPath);
+
+      const jsxFileContent = await readFile(
+        shouldBeStateful ? templates.stateful : templates.stateless
+      );
+
+      // Hard coded string name because that's what the template components are called
+      const newJsxFileContent = prettier.format(
+        renameTransform(jsxFileContent, 'component', componentName),
+        prettierConfig
+      );
+
+      const messages = await Promise.all([
+        writeFile(jsxFilePath, newJsxFileContent),
+        writeFile(scssFilePath, `.${componentName} {}`),
+        writeFile(indexFilePath, indexFileContent)
+      ]);
+
+      resolve({
+        messages: messages.concat({
+          emoji: '🎉',
+          text: `Created ${
+            shouldBeStateful ? 'stateful' : 'stateless'
+          } component ${chalk.greenBright(componentName)}`
+        })
       });
+    } catch (error) {
+      reject(error.message);
+    }
   });
 };

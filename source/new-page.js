@@ -56,25 +56,24 @@ module.exports = async function({
       prettierConfig
     );
 
-    ensureEmptyFolder(folderPath)
-      .then(() => fsExtra.ensureDir(folderPath))
-      .then(() =>
-        Promise.all([
-          writeFile(jsxFilePath, jsxFileContent),
-          writeFile(jsonFilePath, '{}'),
-          writeFile(indexFilePath, indexFileContent)
-        ])
-      )
-      .then(messages => {
-        resolve({
-          messages: messages.concat({
-            emoji: '🎉',
-            text: `Created page ${chalk.greenBright(componentName)}`
-          })
-        });
-      })
-      .catch(error => {
-        reject(error.message);
+    try {
+      await ensureEmptyFolder(folderPath);
+      await fsExtra.ensureDir(folderPath);
+
+      const messages = await Promise.all([
+        writeFile(jsxFilePath, jsxFileContent),
+        writeFile(jsonFilePath, '{}'),
+        writeFile(indexFilePath, indexFileContent)
+      ]);
+
+      resolve({
+        messages: messages.concat({
+          emoji: '🎉',
+          text: `Created page ${chalk.greenBright(componentName)}`
+        })
       });
+    } catch (error) {
+      reject(error.message);
+    }
   });
 };
