@@ -29,12 +29,6 @@ module.exports = function({
     const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
     const scssFilePath = path.join(folderPath, `${componentName}.scss`);
 
-    try {
-      ensureEmptyFolder(folderPath);
-    } catch (error) {
-      return reject(error.message);
-    }
-
     const templates = {
       stateful: path.join(__dirname, './templates/stateful-component.jsx'),
       stateless: path.join(__dirname, './templates/stateless-component.jsx')
@@ -47,6 +41,7 @@ module.exports = function({
 
     fsExtra
       .ensureDir(folderPath)
+      .then(() => ensureEmptyFolder(folderPath))
       .then(() =>
         readFile(shouldBeStateful ? templates.stateful : templates.stateless)
       )

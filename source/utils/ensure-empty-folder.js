@@ -5,12 +5,16 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = function(folderPath) {
-  const slugs = folderPath.split(path.sep);
-  const folderName = slugs.slice(-1)[0];
+  return new Promise((resolve, reject) => {
+    const slugs = folderPath.split(path.sep);
+    const folderName = slugs.slice(-1)[0];
 
-  if (fs.existsSync(folderPath)) {
-    throw new Error(`Folder ${chalk.blueBright(folderName)} already exists.`);
-  }
+    if (fs.existsSync(folderPath)) {
+      return reject(
+        new Error(`Folder ${chalk.blueBright(folderName)} already exists.`)
+      );
+    }
 
-  return true;
+    resolve();
+  });
 };
