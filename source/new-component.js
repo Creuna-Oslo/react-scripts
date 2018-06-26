@@ -39,9 +39,8 @@ module.exports = function({
       prettierConfig
     );
 
-    fsExtra
-      .ensureDir(folderPath)
-      .then(() => ensureEmptyFolder(folderPath))
+    ensureEmptyFolder(folderPath)
+      .then(() => fsExtra.ensureDir(folderPath))
       .then(() =>
         readFile(shouldBeStateful ? templates.stateful : templates.stateless)
       )
@@ -62,10 +61,10 @@ module.exports = function({
       .then(messages => {
         resolve({
           messages: messages.concat({
-            emoji: '⚙️',
+            emoji: '🎉',
             text: `Created ${
               shouldBeStateful ? 'stateful' : 'stateless'
-            } ${chalk.blueBright(componentName)}`
+            } component ${chalk.greenBright(componentName)}`
           })
         });
       })
