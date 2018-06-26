@@ -19,7 +19,7 @@ module.exports = function({ componentsPath, eslintConfig, pathOrName }) {
         pathOrName
       });
 
-      const fileContent = await readFile(filePath);
+      const fileContent = readFile(filePath);
 
       const newFileContent = prettier.format(
         toStatefulTransform(fileContent, componentName),

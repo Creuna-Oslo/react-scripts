@@ -1,6 +1,5 @@
 /* eslint-env node */
 /* eslint-disable no-console */
-const chalk = require('chalk');
 const eslint = require('eslint');
 const reactEslint = require('eslint-plugin-react');
 
@@ -16,12 +15,7 @@ linter.defineRules(
   )
 );
 
-module.exports = function(
-  sourceCode,
-  eslintrc,
-  showLogError = true,
-  exitOnFail = true
-) {
+module.exports = function(sourceCode, eslintrc) {
   const errors = linter.verify(sourceCode, {
     parser: 'babel-eslint',
     parserOptions: eslintrc.parserOptions,
@@ -32,27 +26,16 @@ module.exports = function(
   const fatalError = errors.find(error => error.fatal);
 
   if (fatalError) {
-    console.log(chalk.redBright(fatalError.message));
-    console.log(chalk.redBright('Aborting.'));
-    process.exit(0);
+    throw new Error(`${fatalError.message}\n\nAborting.`);
   }
 
   // If the component can be converted, eslint will return a warning that the component should be converted. If there are no warnings, the component can't be converted.
   if (!errors.length) {
-    if (showLogError) {
-      console.log(
-        `😭  ${chalk.redBright(`Component can't be converted. Make sure that there is no:
+    throw new Error(
+      `Component can't be converted. Make sure that there is no:
   • state or references to state
   • class methods
-  • refs
-        `)}`
-      );
-    }
-
-    if (exitOnFail) {
-      process.exit(1);
-    } else {
-      throw new Error("Component can't be converted");
-    }
+  • refs`
+    );
   }
 };

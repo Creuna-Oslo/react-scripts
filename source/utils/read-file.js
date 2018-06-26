@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-module.exports = async function(filePath) {
+module.exports = function(filePath) {
   const slugs = filePath.split(path.sep);
   const fileName = slugs.slice(-1)[0];
 
