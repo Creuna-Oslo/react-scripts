@@ -1,11 +1,10 @@
 /* eslint-env node */
 /* eslint-disable no-console */
 const chalk = require('chalk');
+const fsExtra = require('fs-extra');
 const path = require('path');
 const prettier = require('prettier');
-const prompt = require('@creuna/prompt');
 
-const createFolder = require('./utils/create-folder');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
@@ -14,63 +13,69 @@ const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(
-  maybePathOrName,
-  maybeShouldBeStateful,
-  componentsPath
-) {
-  const { prettierConfig } = await getConfigs();
-  const { pathOrName, shouldBeStateful } = await prompt({
-    pathOrName: {
-      text: 'Name of component',
-      value: maybePathOrName
-    },
-    shouldBeStateful: {
-      text: 'Should component have state?',
-      type: Boolean,
-      value: maybeShouldBeStateful
+module.exports = function({
+  componentsPath,
+  eslintConfig,
+  pathOrName,
+  shouldBeStateful
+}) {
+  return new Promise(async (resolve, reject) => {
+    const { prettierConfig } = getConfigs(eslintConfig);
+
+    const isPath = pathOrName.indexOf(path.sep) !== -1;
+    const componentName = isPath ? lastSlug(pathOrName) : pathOrName;
+    const folderPath = path.join(componentsPath, pathOrName);
+    const indexFilePath = path.join(folderPath, 'index.js');
+    const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
+    const scssFilePath = path.join(folderPath, `${componentName}.scss`);
+
+    try {
+      ensureEmptyFolder(folderPath);
+    } catch (error) {
+      return reject(error.message);
     }
-  });
 
-  const isPath = pathOrName.indexOf(path.sep) !== -1;
-  const componentName = isPath ? lastSlug(pathOrName) : pathOrName;
-  const folderPath = path.join(componentsPath, pathOrName);
-  const indexFilePath = path.join(folderPath, 'index.js');
-  const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
-  const scssFilePath = path.join(folderPath, `${componentName}.scss`);
+    const templates = {
+      stateful: path.join(__dirname, './templates/stateful-component.jsx'),
+      stateless: path.join(__dirname, './templates/stateless-component.jsx')
+    };
 
-  ensureEmptyFolder(folderPath);
+    const indexFileContent = prettier.format(
+      generateIndexFile(componentName),
+      prettierConfig
+    );
 
-  console.log(
-    `⚙️  Generating ${
-      shouldBeStateful ? 'stateful' : 'stateless'
-    } ${chalk.blueBright(componentName)}`
-  );
-
-  const templates = {
-    stateful: path.join(__dirname, './templates/stateful-component.jsx'),
-    stateless: path.join(__dirname, './templates/stateless-component.jsx')
-  };
-
-  const indexFileContent = prettier.format(
-    generateIndexFile(componentName),
-    prettierConfig
-  );
-
-  createFolder(folderPath)
-    .then(() =>
-      readFile(shouldBeStateful ? templates.stateful : templates.stateless)
-    )
-    .then(jsxFileContent =>
-      // Hard coded string name because that's what the template components are called
-      prettier.format(
-        renameTransform(jsxFileContent, 'component', componentName),
-        prettierConfig
+    fsExtra
+      .ensureDir(folderPath)
+      .then(() =>
+        readFile(shouldBeStateful ? templates.stateful : templates.stateless)
       )
-    )
-    .then(newJsxFileContent => {
-      writeFile(jsxFilePath, newJsxFileContent);
-      writeFile(scssFilePath, `.${componentName} {}`);
-      writeFile(indexFilePath, indexFileContent);
-    });
+      .then(jsxFileContent =>
+        // Hard coded string name because that's what the template components are called
+        prettier.format(
+          renameTransform(jsxFileContent, 'component', componentName),
+          prettierConfig
+        )
+      )
+      .then(newJsxFileContent =>
+        Promise.all([
+          writeFile(jsxFilePath, newJsxFileContent),
+          writeFile(scssFilePath, `.${componentName} {}`),
+          writeFile(indexFilePath, indexFileContent)
+        ])
+      )
+      .then(messages => {
+        resolve({
+          messages: messages.concat({
+            emoji: '⚙️',
+            text: `Created ${
+              shouldBeStateful ? 'stateful' : 'stateless'
+            } ${chalk.blueBright(componentName)}`
+          })
+        });
+      })
+      .catch(error => {
+        reject(error.message);
+      });
+  });
 };

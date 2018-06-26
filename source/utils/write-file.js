@@ -7,19 +7,20 @@ const path = require('path');
 module.exports = function(filePath, fileContent, confirmationMessage) {
   const slugs = filePath.split(path.sep);
   const fileName = slugs.slice(-1)[0];
-  const defaultConfirmation = `💾  ${chalk.blueBright(fileName)} saved`;
+  const defaultConfirmation = {
+    emoji: '💾',
+    text: `${chalk.blueBright(fileName)} saved`
+  };
 
-  return new Promise(res => {
-    fs.writeFile(filePath, fileContent, {}, err => {
-      if (err) {
-        console.log(`👻  ${chalk.redBright('Error writing')} ${fileName}`, err);
-
-        process.exit(1);
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filePath, fileContent, {}, error => {
+      if (error) {
+        reject(
+          new Error(`Error writing ${chalk.blueBright(fileName)}\n\n${error}`)
+        );
       }
 
-      console.log(confirmationMessage || defaultConfirmation);
-
-      return res();
+      return resolve(confirmationMessage || defaultConfirmation);
     });
   });
 };

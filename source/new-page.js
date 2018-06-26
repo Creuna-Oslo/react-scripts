@@ -8,7 +8,6 @@ const path = require('path');
 const prettier = require('prettier');
 const prompt = require('@creuna/prompt');
 
-const createFolder = require('./utils/create-folder');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');

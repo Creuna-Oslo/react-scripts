@@ -4,16 +4,12 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-const red = chalk.redBright;
-
 module.exports = function(folderPath) {
   const slugs = folderPath.split(path.sep);
   const folderName = slugs.slice(-1)[0];
 
   if (fs.existsSync(folderPath)) {
-    console.log(`👻  ${red('Folder')} ${folderName} ${red('already exists.')}`);
-
-    process.exit(1);
+    throw new Error(`Folder ${chalk.blueBright(folderName)} already exists.`);
   }
 
   return true;

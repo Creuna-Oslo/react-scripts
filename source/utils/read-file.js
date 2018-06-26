@@ -8,15 +8,16 @@ module.exports = function(filePath) {
   const slugs = filePath.split(path.sep);
   const fileName = slugs.slice(-1)[0];
 
-  return new Promise(res => {
-    fs.readFile(filePath, 'utf-8', (err, fileContent) => {
-      if (err) {
-        console.log(`👻  ${chalk.redBright('Error reading')} ${fileName}`, err);
-
-        process.exit(1);
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf-8', (error, fileContent) => {
+      if (error) {
+        reject(
+          new Error(`Error reading ${chalk.blueBright(fileName)}\n\n${error}
+        `)
+        );
       }
 
-      return res(fileContent);
+      return resolve(fileContent);
     });
   });
 };
