@@ -8,10 +8,6 @@ const removeLastSlug = require('./remove-last-slug');
 
 // This function tries to find a react component from a full path, a path relative to 'componentsPath' or the current working directory
 module.exports = function({ pathOrName, componentsPath }) {
-  if (!componentsPath) {
-    throw new Error('No components path provided.');
-  }
-
   if (!pathOrName) {
     throw new Error('No component name provided.');
   }
@@ -29,6 +25,19 @@ module.exports = function({ pathOrName, componentsPath }) {
     });
   }
 
+  // Handle file in current working directory
+  if (hasFileExtension) {
+    return validatePath({
+      componentName: lastSlug.replace(/.jsx$/, ''),
+      filePath: path.join(process.cwd(), lastSlug),
+      folderPath: process.cwd()
+    });
+  }
+
+  if (!componentsPath) {
+    throw new Error('No components path provided.');
+  }
+
   // Handle path relative to 'componentsPath'
   if (isPath(pathOrName)) {
     const fullPath = path.join(componentsPath, pathOrName);
@@ -40,15 +49,6 @@ module.exports = function({ pathOrName, componentsPath }) {
         ? fullPath
         : path.join(fullPath, `${componentName}.jsx`),
       folderPath: hasFileExtension ? removeLastSlug(fullPath) : fullPath
-    });
-  }
-
-  // Handle file in current working directory
-  if (hasFileExtension) {
-    return validatePath({
-      componentName: lastSlug.replace(/.jsx$/, ''),
-      filePath: path.join(process.cwd(), lastSlug),
-      folderPath: process.cwd()
     });
   }
 
