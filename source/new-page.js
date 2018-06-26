@@ -14,7 +14,7 @@ const renameImportTransform = require('./transforms/rename-import-json');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function({
+module.exports = function({
   componentName,
   eslintConfig,
   humanReadableName,

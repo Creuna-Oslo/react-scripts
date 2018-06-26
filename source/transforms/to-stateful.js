@@ -32,9 +32,13 @@ module.exports = function(sourceCode, componentName) {
     // Get render content and prop names
     VariableDeclarator(path) {
       if (path.get('id').isIdentifier({ name: pascalComponentName })) {
-        propNames = path.node.init.params[0].properties.map(
-          objectProperty => objectProperty.key.name
-        );
+        try {
+          propNames = path.node.init.params[0].properties.map(
+            objectProperty => objectProperty.key.name
+          );
+        } catch (error) {
+          propNames = [];
+        }
         renderBody = path.node.init.body;
       }
     },
