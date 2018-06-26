@@ -21,6 +21,14 @@ module.exports = async function({
   mockupPath
 }) {
   return new Promise(async (resolve, reject) => {
+    if (!mockupPath) {
+      return reject('No mockup component path provided.');
+    }
+
+    if (!componentName) {
+      return reject('No page name provided.');
+    }
+
     const { prettierConfig } = getConfigs(eslintConfig);
 
     const folderPath = path.join(mockupPath, componentName);

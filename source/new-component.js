@@ -20,6 +20,14 @@ module.exports = function({
   shouldBeStateful
 }) {
   return new Promise(async (resolve, reject) => {
+    if (!componentsPath) {
+      return reject('No components path provided');
+    }
+
+    if (!pathOrName) {
+      return reject('No component name provided');
+    }
+
     const { prettierConfig } = getConfigs(eslintConfig);
 
     const isPath = pathOrName.indexOf(path.sep) !== -1;
