@@ -15,7 +15,7 @@ module.exports = function(filePath, fileContent, confirmationMessage) {
   return new Promise((resolve, reject) => {
     fs.writeFile(filePath, fileContent, {}, error => {
       if (error) {
-        reject(
+        return reject(
           new Error(`Error writing ${chalk.blueBright(fileName)}\n\n${error}`)
         );
       }

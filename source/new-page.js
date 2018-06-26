@@ -6,7 +6,6 @@ const fsExtra = require('fs-extra');
 const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const path = require('path');
 const prettier = require('prettier');
-const prompt = require('@creuna/prompt');
 
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
@@ -15,61 +14,67 @@ const renameImportTransform = require('./transforms/rename-import-json');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(
-  maybeComponentName,
-  maybeHumanReadableName,
+module.exports = async function({
+  componentName,
+  eslintConfig,
+  humanReadableName,
   mockupPath
-) {
-  const { prettierConfig } = await getConfigs();
-  const { componentName, humanReadableName } = await prompt({
-    componentName: { text: 'Name of page', value: maybeComponentName },
-    humanReadableName: {
-      optional: true,
-      text: 'Human readable name (optional)',
-      value: maybeHumanReadableName
-    }
+}) {
+  return new Promise(async (resolve, reject) => {
+    const { prettierConfig } = getConfigs(eslintConfig);
+
+    const folderPath = path.join(mockupPath, componentName);
+    const indexFilePath = path.join(folderPath, 'index.js');
+    const jsonFilePath = path.join(folderPath, `${componentName}.json`);
+    const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
+    const pascalComponentName = kebabToPascal(componentName);
+
+    const templateContent = fs.readFileSync(
+      path.join(__dirname, 'templates/mockup-page.jsx'),
+      { encoding: 'utf-8' }
+    );
+
+    const renamedSource = renameJSXTransform(
+      templateContent,
+      'component',
+      componentName
+    );
+
+    const sourceWithRenamedImport = renameImportTransform(
+      renamedSource,
+      componentName
+    );
+
+    const jsxFileContent = prettier.format(
+      `// ${humanReadableName || pascalComponentName}\n` +
+        sourceWithRenamedImport,
+      prettierConfig
+    );
+
+    const indexFileContent = prettier.format(
+      generateIndexFile(componentName),
+      prettierConfig
+    );
+
+    ensureEmptyFolder(folderPath)
+      .then(() => fsExtra.ensureDir(folderPath))
+      .then(() =>
+        Promise.all([
+          writeFile(jsxFilePath, jsxFileContent),
+          writeFile(jsonFilePath, '{}'),
+          writeFile(indexFilePath, indexFileContent)
+        ])
+      )
+      .then(messages => {
+        resolve({
+          messages: messages.concat({
+            emoji: '🎉',
+            text: `Created page ${chalk.greenBright(componentName)}`
+          })
+        });
+      })
+      .catch(error => {
+        reject(error.message);
+      });
   });
-
-  const folderPath = path.join(mockupPath, componentName);
-  const indexFilePath = path.join(folderPath, 'index.js');
-  const jsonFilePath = path.join(folderPath, `${componentName}.json`);
-  const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
-  const pascalComponentName = kebabToPascal(componentName);
-
-  fsExtra.ensureDirSync(mockupPath);
-  ensureEmptyFolder(folderPath);
-
-  console.log(`⚙️  Generating ${chalk.blueBright(componentName)}`);
-
-  const templateContent = fs.readFileSync(
-    path.join(__dirname, 'templates/mockup-page.jsx'),
-    { encoding: 'utf-8' }
-  );
-
-  const renamedSource = renameJSXTransform(
-    templateContent,
-    'component',
-    componentName
-  );
-
-  const sourceWithRenamedImport = renameImportTransform(
-    renamedSource,
-    componentName
-  );
-
-  const jsxFileContent = prettier.format(
-    `// ${humanReadableName || pascalComponentName}\n` +
-      sourceWithRenamedImport,
-    prettierConfig
-  );
-
-  const indexFileContent = prettier.format(
-    generateIndexFile(componentName),
-    prettierConfig
-  );
-
-  createFolder(folderPath)
-    .then(() => writeFile(jsxFilePath, jsxFileContent))
-    .then(() => writeFile(jsonFilePath, '{}'))
-    .then(() => writeFile(indexFilePath, indexFileContent));
 };
