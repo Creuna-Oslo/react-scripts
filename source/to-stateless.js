@@ -10,10 +10,10 @@ const readFile = require('./utils/read-file');
 const toStatelessTransform = require('./transforms/to-stateless');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function({ eslintConfig, pathOrName, componentsPath }) {
+module.exports = function({ eslintConfig, pathOrName, componentsPath }) {
   const _eslintConfig = eslintConfig;
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const { eslintConfig, prettierConfig } = getConfigs(_eslintConfig);
 
     try {
@@ -31,7 +31,7 @@ module.exports = async function({ eslintConfig, pathOrName, componentsPath }) {
         prettierConfig
       );
 
-      await writeFile(filePath, newFileContent);
+      writeFile(filePath, newFileContent);
 
       resolve([
         { emoji: `🤖`, text: `${chalk.green(`Beep boop, I'm done!`)}` }

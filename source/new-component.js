@@ -51,7 +51,7 @@ module.exports = function({
       ensureEmptyFolder(folderPath);
       await fsExtra.ensureDir(folderPath);
 
-      const jsxFileContent = await readFile(
+      const jsxFileContent = readFile(
         shouldBeStateful ? templates.stateful : templates.stateless
       );
 

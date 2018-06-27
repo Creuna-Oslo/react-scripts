@@ -10,7 +10,7 @@ const toStatefulTransform = require('./transforms/to-stateful');
 const writeFile = require('./utils/write-file');
 
 module.exports = function({ componentsPath, eslintConfig, pathOrName }) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const { prettierConfig } = getConfigs(eslintConfig);
 
     try {

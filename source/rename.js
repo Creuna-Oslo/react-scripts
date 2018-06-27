@@ -24,7 +24,7 @@ module.exports = function({
 }) {
   const { prettierConfig } = getConfigs(eslintConfig);
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       const { componentName, filePath, folderPath } = getComponent({
         pathOrName,
