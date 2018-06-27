@@ -26,7 +26,7 @@ module.exports = function({ componentsPath, eslintConfig, pathOrName }) {
         prettierConfig
       );
 
-      await writeFile(filePath, newFileContent);
+      writeFile(filePath, newFileContent);
 
       resolve([
         { emoji: '🤖', text: `${chalk.green(`Beep boop, I'm done!`)}` }

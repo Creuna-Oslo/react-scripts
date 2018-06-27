@@ -61,11 +61,11 @@ module.exports = function({
         prettierConfig
       );
 
-      const messages = await Promise.all([
+      const messages = [
         writeFile(jsxFilePath, newJsxFileContent),
         writeFile(scssFilePath, `.${componentName} {}`),
         writeFile(indexFilePath, indexFileContent)
-      ]);
+      ];
 
       resolve({
         messages: messages.concat({

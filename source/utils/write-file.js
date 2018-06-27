@@ -15,6 +15,8 @@ module.exports = function(filePath, fileContent) {
       text: `${chalk.blueBright(fileName)} saved`
     };
   } catch (error) {
-    throw new Error(`Error writing ${chalk.blueBright(fileName)}\n\n${error}`);
+    throw new Error(
+      `Error writing ${chalk.blueBright(fileName)}\n\n${error.message}`
+    );
   }
 };

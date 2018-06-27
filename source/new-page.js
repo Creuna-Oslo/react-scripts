@@ -68,11 +68,11 @@ module.exports = function({
       await ensureEmptyFolder(folderPath);
       await fsExtra.ensureDir(folderPath);
 
-      const messages = await Promise.all([
+      const messages = [
         writeFile(jsxFilePath, jsxFileContent),
         writeFile(jsonFilePath, '{}'),
         writeFile(indexFilePath, indexFileContent)
-      ]);
+      ];
 
       resolve({
         messages: messages.concat({
