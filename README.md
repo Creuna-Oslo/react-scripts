@@ -13,16 +13,16 @@ This module exports one object containing all the functions.
 ```javascript
 {
   newComponent, // Create new component
-  newPage, // Create new mockup page
-  rename, // Rename component
-  toStateful, // Convert component to stateful
-  toStateless; // Convert component to stateless
+    newPage, // Create new mockup page
+    rename, // Rename component
+    toStateful, // Convert component to stateful
+    toStateless; // Convert component to stateless
 }
 ```
 
 ## Notes
 
-The functions require a `.creunarc.json` and a `.eslintrc.json` in your project root.
+When running from `@creuna/cli` the functions require a `.creunarc.json` in your project root.
 
 ### .creunarc.json
 
