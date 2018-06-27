@@ -46,10 +46,6 @@ module.exports = function({
         shouldRenameFolder &&
         path.join(removeLastSlug(folderPath), newComponentName);
 
-      if (shouldRenameFolder) {
-        await ensureEmptyFolder(newFolderPath);
-      }
-
       const jsxFileContent = readFile(jsxFilePath);
 
       const newJsxFileContent = prettier.format(
@@ -86,6 +82,7 @@ module.exports = function({
       }
 
       if (shouldRenameFolder) {
+        ensureEmptyFolder(newFolderPath);
         messages.push(renameFile(folderPath, newComponentName, 'folder'));
       }
 

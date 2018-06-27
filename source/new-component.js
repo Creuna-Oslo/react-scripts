@@ -48,7 +48,7 @@ module.exports = function({
     );
 
     try {
-      await ensureEmptyFolder(folderPath);
+      ensureEmptyFolder(folderPath);
       await fsExtra.ensureDir(folderPath);
 
       const jsxFileContent = await readFile(
