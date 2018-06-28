@@ -1,10 +1,8 @@
 /* eslint-env node */
-/* eslint-disable no-console */
 const chalk = require('chalk');
 const fs = require('fs');
 const prettier = require('prettier');
 const path = require('path');
-const prompt = require('@creuna/prompt');
 
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
@@ -17,72 +15,88 @@ const renameFile = require('./utils/rename-file');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(pathOrName, maybeNewName, componentsPath) {
-  const { prettierConfig } = await getConfigs();
-  const { componentName, filePath, folderPath } = await getComponent({
-    pathOrName,
-    componentsPath
-  });
-  const { newComponentName } = await prompt({
-    newComponentName: {
-      text: 'New name of component',
-      value: maybeNewName
-    }
-  });
+module.exports = function({
+  eslintConfig,
+  pathOrName,
+  newComponentName,
+  componentsPath
+}) {
+  const { prettierConfig } = getConfigs(eslintConfig);
 
-  const jsxFilePath = filePath;
-  const indexFilename = 'index.js';
-  const indexFilePath = path.join(folderPath, indexFilename);
-  const scssFilename = `${componentName}.scss`;
-  const scssFilePath = path.join(folderPath, scssFilename);
+  return new Promise((resolve, reject) => {
+    try {
+      const { componentName, filePath, folderPath } = getComponent({
+        pathOrName,
+        componentsPath
+      });
 
-  const hasScssfile = fs.existsSync(path.join(folderPath, scssFilename));
-  const hasIndexFile = fs.existsSync(path.join(folderPath, indexFilename));
-  const shouldRenameFolder = componentName === lastSlug(folderPath);
-  const shouldWriteIndex = shouldRenameFolder && hasIndexFile;
+      const jsxFilePath = filePath;
+      const indexFilename = 'index.js';
+      const indexFilePath = path.join(folderPath, indexFilename);
+      const scssFilename = `${componentName}.scss`;
+      const scssFilePath = path.join(folderPath, scssFilename);
 
-  const newFolderPath =
-    shouldRenameFolder &&
-    path.join(removeLastSlug(folderPath), newComponentName);
+      const hasScssfile = fs.existsSync(path.join(folderPath, scssFilename));
+      const hasIndexFile = fs.existsSync(path.join(folderPath, indexFilename));
+      const shouldRenameFolder = componentName === lastSlug(folderPath);
+      const shouldWriteIndex = shouldRenameFolder && hasIndexFile;
 
-  if (shouldRenameFolder) {
-    ensureEmptyFolder(newFolderPath);
-  }
+      const newFolderPath =
+        shouldRenameFolder &&
+        path.join(removeLastSlug(folderPath), newComponentName);
 
-  const jsxFileContent = fs.readFileSync(jsxFilePath, 'utf-8');
+      if (shouldRenameFolder) {
+        // Script should abort if a newFolderPath already exists
+        ensureEmptyFolder(newFolderPath);
+      }
 
-  const newJsxFileContent = prettier.format(
-    renameJSXTransform(jsxFileContent, componentName, newComponentName),
-    prettierConfig
-  );
+      const jsxFileContent = readFile(jsxFilePath);
 
-  const indexFileContent = prettier.format(
-    generateIndexFile(newComponentName),
-    prettierConfig
-  );
+      const newJsxFileContent = prettier.format(
+        renameJSXTransform(jsxFileContent, componentName, newComponentName),
+        prettierConfig
+      );
 
-  writeFile(jsxFilePath, newJsxFileContent)
-    .then(() => renameFile(jsxFilePath, `${newComponentName}.jsx`))
-    .then(() => shouldWriteIndex && writeFile(indexFilePath, indexFileContent))
-    .then(() => hasScssfile && readFile(scssFilePath))
-    .then(
-      scssFileContent =>
-        scssFileContent &&
-        scssFileContent.replace(
+      const indexFileContent = prettier.format(
+        generateIndexFile(newComponentName),
+        prettierConfig
+      );
+
+      const messages = [];
+
+      messages.push(
+        writeFile(jsxFilePath, newJsxFileContent),
+        renameFile(jsxFilePath, `${newComponentName}.jsx`)
+      );
+
+      if (shouldWriteIndex) {
+        messages.push(writeFile(indexFilePath, indexFileContent));
+      }
+
+      if (hasScssfile) {
+        const scssFileContent = readFile(scssFilePath);
+        const newScssFileContent = scssFileContent.replace(
           new RegExp(`\\.${componentName}( |-)`, 'g'),
           `.${newComponentName}$1`
-        )
-    )
-    .then(
-      newScssFileContent =>
-        newScssFileContent && writeFile(scssFilePath, newScssFileContent)
-    )
-    .then(
-      () => hasScssfile && renameFile(scssFilePath, `${newComponentName}.scss`)
-    )
-    .then(
-      () =>
-        shouldRenameFolder && renameFile(folderPath, newComponentName, 'folder')
-    )
-    .then(() => console.log(`🤖  ${chalk.green(`Beep boop, I'm done!`)}`));
+        );
+        messages.push(
+          writeFile(scssFilePath, newScssFileContent),
+          renameFile(scssFilePath, `${newComponentName}.scss`)
+        );
+      }
+
+      if (shouldRenameFolder) {
+        messages.push(renameFile(folderPath, newComponentName, 'folder'));
+      }
+
+      resolve(
+        messages.concat({
+          emoji: '🤖',
+          text: `${chalk.green(`Beep boop, I'm done!`)}`
+        })
+      );
+    } catch (error) {
+      reject(error.message);
+    }
+  });
 };

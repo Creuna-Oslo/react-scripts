@@ -1,32 +1,31 @@
 /* eslint-env node */
-/* eslint-disable no-console */
-const chalk = require('chalk');
-const findUp = require('find-up');
-const path = require('path');
+const eslintConfigDefault = {
+  parserOptions: {
+    ecmaVersion: 6,
+    ecmaFeatures: {
+      classes: true
+    },
+    sourceType: 'module'
+  }
+};
 
-const red = chalk.redBright;
+// I know I know, but importing lodash for this seems overkill
+const getPrettierConfig = eslintConfig => {
+  return (
+    (eslintConfig.rules &&
+      eslintConfig.rules['prettier/prettier'] &&
+      eslintConfig.rules['prettier/prettier'][1]) ||
+    {}
+  );
+};
 
-// Traverse up the folder tree, trying to find config files
-module.exports = function() {
-  return findUp('.eslintrc.json').then(filePath => {
-    if (filePath) {
-      const eslintrcPath = path.relative(__dirname, filePath);
-      const eslintrc = require(eslintrcPath);
-
-      return {
-        eslintrc,
-        prettierConfig: Object.assign(
-          { parser: 'babylon' },
-          eslintrc.rules['prettier/prettier'][1]
-        )
-      };
-    } else {
-      console.log(
-        `😱  ${red('No')} .eslintrc.json' ${red(
-          'file found. Check the readme'
-        )}`
-      );
-      process.exit(1);
-    }
-  });
+// Get configs or fallbacks based on provided eslint config
+module.exports = function(eslintConfig = {}) {
+  return {
+    eslintConfig: Object.assign(eslintConfigDefault, eslintConfig),
+    prettierConfig: Object.assign(
+      { parser: 'babylon' },
+      getPrettierConfig(eslintConfig)
+    )
+  };
 };

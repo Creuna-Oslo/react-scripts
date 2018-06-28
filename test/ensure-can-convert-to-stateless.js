@@ -23,12 +23,12 @@ const invalidComponentSource = fs.readFileSync(
 
 test('Detects able to convert', t => {
   t.notThrows(() => {
-    ensureCanConvertToStateless(validComponentSource, eslintrc, false, false);
+    ensureCanConvertToStateless(validComponentSource, eslintrc);
   });
 });
 
 test('Detects unable to convert', t => {
   t.throws(() => {
-    ensureCanConvertToStateless(invalidComponentSource, eslintrc, false, false);
+    ensureCanConvertToStateless(invalidComponentSource, eslintrc);
   });
 });

@@ -19,16 +19,3 @@ This module exports one object containing all the functions.
   toStateless; // Convert component to stateless
 }
 ```
-
-## Notes
-
-The functions require a `.creunarc.json` and a `.eslintrc.json` in your project root.
-
-### .creunarc.json
-
-```json
-{
-  "componentsPath": "relative/path/to/components",
-  "mockupPath": "relative/path/to/mockup"
-}
-```

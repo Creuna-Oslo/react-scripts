@@ -1,34 +1,42 @@
 /* eslint-env node */
-/* eslint-disable no-console */
 const chalk = require('chalk');
-const fs = require('fs');
 const prettier = require('prettier');
 
 const ensureCanConvertToStateless = require('./utils/ensure-can-convert-to-stateless');
 const getComponent = require('./utils/get-component');
 const getConfigs = require('./utils/get-configs');
+const readFile = require('./utils/read-file');
 const toStatelessTransform = require('./transforms/to-stateless');
 const writeFile = require('./utils/write-file');
 
-module.exports = async function(pathOrName, componentsPath) {
-  const { eslintrc, prettierConfig } = await getConfigs();
-  const { componentName, filePath } = await getComponent({
-    componentsPath,
-    pathOrName
+module.exports = function({ eslintConfig, pathOrName, componentsPath }) {
+  const _eslintConfig = eslintConfig;
+
+  return new Promise((resolve, reject) => {
+    const { eslintConfig, prettierConfig } = getConfigs(_eslintConfig);
+
+    try {
+      const { componentName, filePath } = getComponent({
+        componentsPath,
+        pathOrName
+      });
+
+      const fileContent = readFile(filePath);
+
+      ensureCanConvertToStateless(fileContent, eslintConfig);
+
+      const newFileContent = prettier.format(
+        toStatelessTransform(fileContent, componentName),
+        prettierConfig
+      );
+
+      writeFile(filePath, newFileContent);
+
+      resolve([
+        { emoji: `🤖`, text: `${chalk.green(`Beep boop, I'm done!`)}` }
+      ]);
+    } catch (error) {
+      reject(error.message);
+    }
   });
-
-  const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' });
-
-  ensureCanConvertToStateless(fileContent, eslintrc);
-
-  const newFileContent = prettier.format(
-    toStatelessTransform(fileContent, componentName),
-    prettierConfig
-  );
-
-  writeFile(
-    filePath,
-    newFileContent,
-    `🤖  ${chalk.green(`Beep boop, I'm done!`)}`
-  );
 };
