@@ -1,5 +1,4 @@
 /* eslint-env node */
-/* eslint-disable no-console */
 const eslintConfigDefault = {
   parserOptions: {
     ecmaVersion: 6,

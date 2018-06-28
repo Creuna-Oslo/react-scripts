@@ -1,5 +1,4 @@
 /* eslint-env node */
-/* eslint-disable no-console */
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
@@ -16,7 +15,7 @@ module.exports = function(filePath, newFilename, type = 'file') {
 
     return {
       emoji: '💾',
-      text: `${chalk.blueBright(fileName)} renamed to ${chalk.blueBright(
+      text: `${chalk.blueBright(fileName)} renamed to ${chalk.cyan(
         newFilename
       )}`
     };

@@ -1,5 +1,4 @@
 /* eslint-env node */
-/* eslint-disable no-console */
 const chalk = require('chalk');
 const fsExtra = require('fs-extra');
 const path = require('path');

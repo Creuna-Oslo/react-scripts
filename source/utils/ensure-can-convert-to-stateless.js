@@ -1,5 +1,4 @@
 /* eslint-env node */
-/* eslint-disable no-console */
 const eslint = require('eslint');
 const reactEslint = require('eslint-plugin-react');
 
