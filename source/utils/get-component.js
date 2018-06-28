@@ -9,55 +9,82 @@ const removeLastSlug = require('./remove-last-slug');
 // This function tries to find a react component from a full path, a path relative to 'componentsPath' or the current working directory
 module.exports = function({ pathOrName, componentsPath }) {
   if (!pathOrName) {
-    throw new Error('No component name provided.');
+    throw new Error('No component name or path provided.');
   }
 
   const slugs = pathOrName.split(path.sep);
   const lastSlug = slugs.slice(-1)[0];
   const hasFileExtension = pathOrName.indexOf('.jsx') !== -1;
+  const isPath = pathOrName.indexOf(path.sep) !== -1;
+  const componentName = lastSlug.replace(/.jsx$/, '');
+  const componentNotFoundError = new Error(
+    `Couldn't find component ${chalk.blueBright(componentName)}.`
+  );
 
   // Handle full path
   if (isFullPath(pathOrName)) {
-    return validatePath({
-      componentName: lastSlug.replace(/.jsx$/, ''),
-      filePath: pathOrName,
-      folderPath: removeLastSlug(pathOrName)
-    });
+    const filePath = pathOrName;
+    const folderPath = removeLastSlug(pathOrName);
+
+    if (fs.existsSync(filePath)) {
+      return { componentName, filePath, folderPath };
+    } else {
+      throw componentNotFoundError;
+    }
   }
 
   // Handle file in current working directory
-  if (hasFileExtension) {
-    return validatePath({
-      componentName: lastSlug.replace(/.jsx$/, ''),
-      filePath: path.join(process.cwd(), lastSlug),
-      folderPath: process.cwd()
-    });
+  if (!isPath && hasFileExtension) {
+    const filePath = path.join(process.cwd(), lastSlug);
+    const folderPath = process.cwd();
+
+    if (fs.existsSync(filePath)) {
+      return { componentName, filePath, folderPath };
+    } else {
+      throw componentNotFoundError;
+    }
   }
 
+  // If pathOrName is not a path or a file in CWD, componentsPath is required
   if (!componentsPath) {
     throw new Error('No components path provided.');
   }
 
-  // Handle path relative to 'componentsPath'
-  if (isPath(pathOrName)) {
+  // Handle path relative to 'componentsPath' with file extension
+  if (isPath && hasFileExtension) {
     const fullPath = path.join(componentsPath, pathOrName);
-    const componentName = lastSlug.replace(/.jsx$/, '');
+    const filePath = fullPath;
+    const folderPath = removeLastSlug(fullPath);
 
-    return validatePath({
-      componentName,
-      filePath: hasFileExtension
-        ? fullPath
-        : path.join(fullPath, `${componentName}.jsx`),
-      folderPath: hasFileExtension ? removeLastSlug(fullPath) : fullPath
-    });
+    if (fs.existsSync(filePath)) {
+      return { componentName, filePath, folderPath };
+    } else {
+      throw componentNotFoundError;
+    }
   }
 
-  // Handle component directly descending 'componentsPath'
-  return validatePath({
-    componentName: lastSlug,
-    filePath: path.join(componentsPath, lastSlug, `${lastSlug}.jsx`),
-    folderPath: path.join(componentsPath, lastSlug)
-  });
+  // Handle path relative to 'componentsPath' without file extension
+  if (isPath) {
+    const fullPath = path.join(componentsPath, pathOrName);
+    const filePath = path.join(fullPath, `${componentName}.jsx`);
+    const folderPath = fullPath;
+
+    if (fs.existsSync(filePath)) {
+      return { componentName, filePath, folderPath };
+    } else {
+      throw componentNotFoundError;
+    }
+  }
+
+  // Handle component directly descending 'componentsPath' where folder name and jsx file name match
+  const filePath = path.join(componentsPath, lastSlug, `${lastSlug}.jsx`);
+  const folderPath = path.join(componentsPath, lastSlug);
+
+  if (fs.existsSync(filePath)) {
+    return { componentName, filePath, folderPath };
+  } else {
+    throw componentNotFoundError;
+  }
 };
 
 function isFullPath(inputPath) {
@@ -65,18 +92,4 @@ function isFullPath(inputPath) {
   const dirnameSlugs = __dirname.split(path.sep);
 
   return slugs && slugs[1] === dirnameSlugs[1];
-}
-
-function isPath(inputPath) {
-  return inputPath.indexOf(path.sep) !== -1;
-}
-
-function validatePath({ componentName, filePath, folderPath }) {
-  if (!fs.existsSync(folderPath) || !fs.existsSync(filePath)) {
-    throw new Error(
-      `Couldn't find component ${chalk.blueBright(componentName)}.`
-    );
-  }
-
-  return { componentName, filePath, folderPath };
 }
