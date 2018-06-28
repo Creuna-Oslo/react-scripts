@@ -19,7 +19,7 @@ newComponent({
       pathOrName: 'test-component'
     })
   )
-  .then(messages => {
+  .then(({ messages }) => {
     messages.forEach(({ emoji, text }) => console.log(`${emoji} ${text}`));
   })
   .catch(errorMessage => {

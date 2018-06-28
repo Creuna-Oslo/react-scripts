@@ -32,9 +32,11 @@ module.exports = function({ eslintConfig, pathOrName, componentsPath }) {
 
       writeFile(filePath, newFileContent);
 
-      resolve([
-        { emoji: `🤖`, text: `${chalk.green(`Beep boop, I'm done!`)}` }
-      ]);
+      resolve({
+        messages: [
+          { emoji: `🤖`, text: `${chalk.green(`Beep boop, I'm done!`)}` }
+        ]
+      });
     } catch (error) {
       reject(error.message);
     }

@@ -89,12 +89,12 @@ module.exports = function({
         messages.push(renameFile(folderPath, newComponentName, 'folder'));
       }
 
-      resolve(
-        messages.concat({
+      resolve({
+        messages: messages.concat({
           emoji: '🤖',
           text: `${chalk.green(`Beep boop, I'm done!`)}`
         })
-      );
+      });
     } catch (error) {
       reject(error.message);
     }
