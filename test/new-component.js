@@ -35,3 +35,10 @@ test.cb('Stateless', template, 'component', '', false);
 test.cb('Stateful', template, 'component', '', true);
 
 test.cb('Relative path', template, 'test/test/component', '');
+test.cb('With componentsPath', template, 'component', 'components');
+test.cb(
+  'Nested with componentsPath',
+  template,
+  'test/test/component',
+  'components'
+);
