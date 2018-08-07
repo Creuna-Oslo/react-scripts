@@ -3,12 +3,9 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-const removeLastSlug = require('./remove-last-slug');
-
 module.exports = function(filePath, newFilename, type = 'file') {
-  const slugs = filePath.split(path.sep);
-  const fileName = slugs.slice(-1)[0];
-  const newFilePath = path.join(removeLastSlug(filePath), newFilename);
+  const fileName = path.basename(filePath);
+  const newFilePath = path.join(path.dirname(filePath), newFilename);
 
   try {
     fs.renameSync(filePath, newFilePath);

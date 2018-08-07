@@ -10,7 +10,6 @@ const getComponent = require('./utils/get-component');
 const getConfigs = require('./utils/get-configs');
 const lastSlug = require('./utils/last-slug');
 const readFile = require('./utils/read-file');
-const removeLastSlug = require('./utils/remove-last-slug');
 const renameFile = require('./utils/rename-file');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
@@ -41,12 +40,12 @@ module.exports = function({
       const shouldRenameFolder = componentName === lastSlug(folderPath);
       const shouldWriteIndex = shouldRenameFolder && hasIndexFile;
 
-      const newFolderPath =
-        shouldRenameFolder &&
-        path.join(removeLastSlug(folderPath), newComponentName);
-
       if (shouldRenameFolder) {
-        // Script should abort if a newFolderPath already exists
+        // Script should abort if new folder already exists
+        const newFolderPath = path.join(
+          path.dirname(folderPath),
+          newComponentName
+        );
         ensureEmptyFolder(newFolderPath);
       }
 
