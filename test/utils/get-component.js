@@ -43,6 +43,19 @@ test.cb(
   'component/component',
   'components'
 );
+test.cb(
+  'Nested with componentsPath and file ext',
+  template,
+  'component/component.jsx',
+  'components'
+);
 
 test.cb('Basic with cwd', template, 'component', '', true);
 test.cb('Nested with cwd', template, 'component/component', '', true);
+test.cb(
+  'Nested with cwd and file ext',
+  template,
+  'component/component.jsx',
+  '',
+  true
+);
