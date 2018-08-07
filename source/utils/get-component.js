@@ -3,92 +3,51 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-const removeLastSlug = require('./remove-last-slug');
-
 // This function tries to find a react component from a full path, a path relative to 'componentsPath' or the current working directory
-module.exports = function({ pathOrName, componentsPath }) {
+module.exports = function({ componentsPath, cwd = process.cwd(), pathOrName }) {
   if (!pathOrName) {
     throw new Error('No component name or path provided.');
   }
 
-  const slugs = pathOrName.split(path.sep);
-  const lastSlug = slugs.slice(-1)[0];
-  const hasFileExtension = pathOrName.indexOf('.jsx') !== -1;
-  const isPath = pathOrName.indexOf(path.sep) !== -1;
-  const componentName = lastSlug.replace(/.jsx$/, '');
-  const componentNotFoundError = new Error(
-    `Couldn't find component ${chalk.blueBright(componentName)}.`
+  if (componentsPath && !path.isAbsolute(componentsPath)) {
+    throw new Error(
+      `Bad 'componentsPath' (${componentsPath}). Path must be absolute`
+    );
+  }
+
+  const basePath = componentsPath || cwd;
+  const pathWithoutExtension = pathOrName.replace(/\.jsx$/, '');
+  const pathWithExtension = `${pathOrName}.jsx`;
+  const baseName = path.basename(pathOrName, '.jsx');
+  const fileName = `${baseName}.jsx`;
+
+  // List of possible paths for the jsx file. The first matching file will be used.
+  const pathVariations = [
+    pathOrName,
+
+    // component.jsx -> <basePath>/component.jsx
+    path.join(basePath, pathOrName),
+
+    // component -> <basePath>/component.jsx
+    path.join(basePath, pathWithExtension),
+
+    // component.jsx -> <basePath>/component/component.jsx
+    path.join(basePath, pathWithoutExtension, fileName)
+  ];
+
+  const filePath = pathVariations.find(
+    filePath => fs.existsSync(filePath) && path.extname(filePath) === '.jsx'
   );
 
-  // Handle full path
-  if (isFullPath(pathOrName)) {
-    const filePath = pathOrName;
-    const folderPath = removeLastSlug(pathOrName);
-
-    if (fs.existsSync(filePath)) {
-      return { componentName, filePath, folderPath };
-    } else {
-      throw componentNotFoundError;
-    }
+  if (filePath) {
+    return {
+      componentName: path.basename(filePath, '.jsx'),
+      filePath,
+      folderPath: path.dirname(filePath)
+    };
   }
 
-  // Handle file in current working directory
-  if (!isPath && hasFileExtension) {
-    const filePath = path.join(process.cwd(), lastSlug);
-    const folderPath = process.cwd();
-
-    if (fs.existsSync(filePath)) {
-      return { componentName, filePath, folderPath };
-    } else {
-      throw componentNotFoundError;
-    }
-  }
-
-  // If pathOrName is not a path or a file in CWD, componentsPath is required
-  if (!componentsPath) {
-    throw new Error('No components path provided.');
-  }
-
-  // Handle path relative to 'componentsPath' with file extension
-  if (isPath && hasFileExtension) {
-    const fullPath = path.join(componentsPath, pathOrName);
-    const filePath = fullPath;
-    const folderPath = removeLastSlug(fullPath);
-
-    if (fs.existsSync(filePath)) {
-      return { componentName, filePath, folderPath };
-    } else {
-      throw componentNotFoundError;
-    }
-  }
-
-  // Handle path relative to 'componentsPath' without file extension
-  if (isPath) {
-    const fullPath = path.join(componentsPath, pathOrName);
-    const filePath = path.join(fullPath, `${componentName}.jsx`);
-    const folderPath = fullPath;
-
-    if (fs.existsSync(filePath)) {
-      return { componentName, filePath, folderPath };
-    } else {
-      throw componentNotFoundError;
-    }
-  }
-
-  // Handle component directly descending 'componentsPath' where folder name and jsx file name match
-  const filePath = path.join(componentsPath, lastSlug, `${lastSlug}.jsx`);
-  const folderPath = path.join(componentsPath, lastSlug);
-
-  if (fs.existsSync(filePath)) {
-    return { componentName, filePath, folderPath };
-  } else {
-    throw componentNotFoundError;
-  }
+  throw new Error(
+    `Couldn't find component ${chalk.blueBright(path.basename(pathOrName))}.`
+  );
 };
-
-function isFullPath(inputPath) {
-  const slugs = inputPath.split(path.sep);
-  const dirnameSlugs = __dirname.split(path.sep);
-
-  return slugs && slugs[1] === dirnameSlugs[1];
-}
