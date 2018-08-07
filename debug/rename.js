@@ -2,23 +2,15 @@
 const chalk = require('chalk');
 const path = require('path');
 
-const newComponent = require('../source/new-component');
 const rename = require('../source/rename');
 
 const componentsPath = path.join(__dirname, '..', 'dist');
 
-newComponent({
+rename({
   componentsPath,
-  pathOrName: process.argv[2] || 'test-component',
-  shouldBeStateful: false
+  newComponentName: process.argv[3] || 'new-component',
+  pathOrName: process.argv[2] || 'test-component'
 })
-  .then(() =>
-    rename({
-      componentsPath,
-      newComponentName: process.argv[3] || 'new-component',
-      pathOrName: 'test-component'
-    })
-  )
   .then(({ messages }) => {
     messages.forEach(({ emoji, text }) => console.log(`${emoji} ${text}`));
   })

@@ -2,22 +2,14 @@
 const chalk = require('chalk');
 const path = require('path');
 
-const newComponent = require('../source/new-component');
 const toStateful = require('../source/to-stateful');
 
 const componentsPath = path.join(__dirname, '..', 'dist');
 
-newComponent({
+toStateful({
   componentsPath,
-  pathOrName: process.argv[2] || 'test-component',
-  shouldBeStateful: false
+  pathOrName: process.argv[2] || 'test-component'
 })
-  .then(() =>
-    toStateful({
-      componentsPath,
-      pathOrName: 'test-component'
-    })
-  )
   .then(({ messages }) => {
     messages.forEach(({ emoji, text }) => console.log(`${emoji} ${text}`));
   })
