@@ -15,18 +15,18 @@ const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
 module.exports = function({
+  basePath,
   eslintConfig,
   pathOrName,
-  newComponentName,
-  componentsPath
+  newComponentName
 }) {
   const { prettierConfig } = getConfigs(eslintConfig);
 
   return new Promise((resolve, reject) => {
     try {
       const { componentName, filePath, folderPath } = getComponent({
-        pathOrName,
-        componentsPath
+        basePath,
+        pathOrName
       });
 
       const jsxFilePath = filePath;

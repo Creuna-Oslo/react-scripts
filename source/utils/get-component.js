@@ -3,19 +3,12 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-// This function tries to find a react component from a full path, a path relative to 'componentsPath' or the current working directory
-module.exports = function({ componentsPath, cwd = process.cwd(), pathOrName }) {
-  if (!pathOrName) {
-    throw new Error('No component name or path provided.');
-  }
+const validatePaths = require('./validate-paths');
 
-  if (componentsPath && !path.isAbsolute(componentsPath)) {
-    throw new Error(
-      `Bad 'componentsPath' (${componentsPath}). Path must be absolute`
-    );
-  }
+// This function tries to find a react component from a full path, or a path relative to 'basePath'
+module.exports = function({ basePath, pathOrName }) {
+  validatePaths({ basePath, pathOrName });
 
-  const basePath = componentsPath || cwd;
   const pathWithoutExtension = pathOrName.replace(/\.jsx$/, '');
   const pathWithExtension = `${pathOrName}.jsx`;
   const baseName = path.basename(pathOrName, '.jsx');

@@ -10,28 +10,23 @@ const getConfigs = require('./utils/get-configs');
 const lastSlug = require('./utils/last-slug');
 const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
+const validatePaths = require('./utils/validate-paths');
 const writeFile = require('./utils/write-file');
 
 module.exports = function({
-  componentsPath,
+  basePath,
   eslintConfig,
   pathOrName,
   shouldBeStateful
 }) {
   return new Promise(async (resolve, reject) => {
-    if (!componentsPath) {
-      return reject('No components path provided');
-    }
-
-    if (!pathOrName) {
-      return reject('No component name provided');
-    }
+    validatePaths({ basePath, pathOrName });
 
     const { prettierConfig } = getConfigs(eslintConfig);
 
     const isPath = pathOrName.indexOf(path.sep) !== -1;
     const componentName = isPath ? lastSlug(pathOrName) : pathOrName;
-    const folderPath = path.join(componentsPath, pathOrName);
+    const folderPath = path.join(basePath, pathOrName);
     const indexFilePath = path.join(folderPath, 'index.js');
     const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
     const scssFilePath = path.join(folderPath, `${componentName}.scss`);

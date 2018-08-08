@@ -5,7 +5,7 @@ const tempy = require('tempy');
 
 const newComponent = require('../source/new-component');
 
-const template = (t, pathOrName, componentsPathRelative, shouldBeStateful) => {
+const template = (t, pathOrName, shouldBeStateful) => {
   t.plan(2);
 
   const componentName = path.basename(pathOrName, '.jsx');
@@ -15,11 +15,10 @@ const template = (t, pathOrName, componentsPathRelative, shouldBeStateful) => {
     'index.js'
   ];
   const tempDir = tempy.directory();
-  const componentsPath = path.join(tempDir, componentsPathRelative);
-  const componentPath = path.join(componentsPath, pathOrName);
+  const componentPath = path.join(tempDir, pathOrName);
 
   newComponent({
-    componentsPath,
+    basePath: tempDir,
     pathOrName,
     shouldBeStateful
   }).then(() => {
@@ -31,14 +30,6 @@ const template = (t, pathOrName, componentsPathRelative, shouldBeStateful) => {
   });
 };
 
-test.cb('Stateless', template, 'component', '', false);
-test.cb('Stateful', template, 'component', '', true);
-
-test.cb('Relative path', template, 'test/test/component', '');
-test.cb('With componentsPath', template, 'component', 'components');
-test.cb(
-  'Nested with componentsPath',
-  template,
-  'test/test/component',
-  'components'
-);
+test.cb('Stateless', template, 'component', false);
+test.cb('Stateful', template, 'component', true);
+test.cb('Relative path', template, 'test/test/component');

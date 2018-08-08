@@ -9,7 +9,7 @@ const readFile = require('./utils/read-file');
 const toStatelessTransform = require('./transforms/to-stateless');
 const writeFile = require('./utils/write-file');
 
-module.exports = function({ eslintConfig, pathOrName, componentsPath }) {
+module.exports = function({ basePath, eslintConfig, pathOrName }) {
   const _eslintConfig = eslintConfig;
 
   return new Promise((resolve, reject) => {
@@ -17,7 +17,7 @@ module.exports = function({ eslintConfig, pathOrName, componentsPath }) {
 
     try {
       const { componentName, filePath } = getComponent({
-        componentsPath,
+        basePath,
         pathOrName
       });
 

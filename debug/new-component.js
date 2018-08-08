@@ -5,7 +5,7 @@ const path = require('path');
 const newComponent = require('../source/new-component');
 
 newComponent({
-  componentsPath: path.join(__dirname, '..', 'dist'),
+  basePath: path.join(__dirname, '..', 'dist'),
   pathOrName: process.argv[2] || 'test-component',
   shouldBeStateful: process.argv.indexOf('-s') !== -1
 })

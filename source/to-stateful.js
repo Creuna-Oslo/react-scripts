@@ -8,13 +8,13 @@ const readFile = require('./utils/read-file');
 const toStatefulTransform = require('./transforms/to-stateful');
 const writeFile = require('./utils/write-file');
 
-module.exports = function({ componentsPath, eslintConfig, pathOrName }) {
+module.exports = function({ basePath, eslintConfig, pathOrName }) {
   return new Promise((resolve, reject) => {
     const { prettierConfig } = getConfigs(eslintConfig);
 
     try {
       const { componentName, filePath } = getComponent({
-        componentsPath,
+        basePath,
         pathOrName
       });
 

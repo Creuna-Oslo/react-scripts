@@ -4,10 +4,8 @@ const path = require('path');
 
 const rename = require('../source/rename');
 
-const componentsPath = path.join(__dirname, '..', 'dist');
-
 rename({
-  componentsPath,
+  basePath: path.join(__dirname, '..', 'dist'),
   newComponentName: process.argv[3] || 'new-component',
   pathOrName: process.argv[2] || 'test-component'
 })

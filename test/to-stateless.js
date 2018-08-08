@@ -18,7 +18,7 @@ test.cb('To stateless', t => {
   );
 
   toStateless({
-    componentsPath: tempDir,
+    basePath: tempDir,
     pathOrName: componentName
   }).then(() => {
     t.snapshot(

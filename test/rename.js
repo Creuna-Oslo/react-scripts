@@ -26,7 +26,7 @@ test.cb('Rename', t => {
   ];
 
   rename({
-    componentsPath: tempDir,
+    basePath: tempDir,
     newComponentName: newComponentName,
     pathOrName: componentName
   }).then(() => {

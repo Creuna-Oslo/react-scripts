@@ -4,10 +4,8 @@ const path = require('path');
 
 const toStateful = require('../source/to-stateful');
 
-const componentsPath = path.join(__dirname, '..', 'dist');
-
 toStateful({
-  componentsPath,
+  basePath: path.join(__dirname, '..', 'dist'),
   pathOrName: process.argv[2] || 'test-component'
 })
   .then(({ messages }) => {
