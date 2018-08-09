@@ -1,4 +1,5 @@
 /* eslint-env node */
+const assert = require('assert');
 const chalk = require('chalk');
 const fs = require('fs');
 const prettier = require('prettier');
@@ -6,29 +7,23 @@ const path = require('path');
 
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
-const getComponent = require('./utils/get-component');
 const getConfigs = require('./utils/get-configs');
-const lastSlug = require('./utils/last-slug');
 const readFile = require('./utils/read-file');
 const renameFile = require('./utils/rename-file');
 const renameJSXTransform = require('./transforms/rename-jsx');
+const validateFilePath = require('./utils/validate-file-path');
 const writeFile = require('./utils/write-file');
 
-module.exports = function({
-  basePath,
-  eslintConfig,
-  pathOrName,
-  newComponentName
-}) {
+module.exports = function({ eslintConfig, filePath, newComponentName }) {
   const { prettierConfig } = getConfigs(eslintConfig);
 
   return new Promise((resolve, reject) => {
     try {
-      const { componentName, filePath, folderPath } = getComponent({
-        basePath,
-        pathOrName
-      });
+      assert(newComponentName, 'No new component name provided.');
+      validateFilePath(filePath);
 
+      const componentName = path.basename(filePath, '.jsx');
+      const folderPath = path.dirname(filePath);
       const jsxFilePath = filePath;
       const indexFilename = 'index.js';
       const indexFilePath = path.join(folderPath, indexFilename);
@@ -37,7 +32,7 @@ module.exports = function({
 
       const hasScssfile = fs.existsSync(path.join(folderPath, scssFilename));
       const hasIndexFile = fs.existsSync(path.join(folderPath, indexFilename));
-      const shouldRenameFolder = componentName === lastSlug(folderPath);
+      const shouldRenameFolder = componentName === path.basename(folderPath);
       const shouldWriteIndex = shouldRenameFolder && hasIndexFile;
 
       if (shouldRenameFolder) {

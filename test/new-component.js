@@ -18,8 +18,8 @@ const template = (t, pathOrName, shouldBeStateful) => {
   const componentPath = path.join(tempDir, pathOrName);
 
   newComponent({
-    basePath: tempDir,
-    pathOrName,
+    componentName,
+    folderPath: tempDir,
     shouldBeStateful
   }).then(() => {
     t.snapshot(
@@ -32,4 +32,3 @@ const template = (t, pathOrName, shouldBeStateful) => {
 
 test.cb('Stateless', template, 'component', false);
 test.cb('Stateful', template, 'component', true);
-test.cb('Relative path', template, 'test/test/component');

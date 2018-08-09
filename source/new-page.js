@@ -1,4 +1,5 @@
 /* eslint-env node */
+const assert = require('assert');
 const chalk = require('chalk');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
@@ -11,61 +12,56 @@ const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
 const renameImportTransform = require('./transforms/rename-import-json');
 const renameJSXTransform = require('./transforms/rename-jsx');
+const validateFolderPath = require('./utils/validate-folder-path');
 const writeFile = require('./utils/write-file');
 
 module.exports = function({
   componentName,
   eslintConfig,
-  humanReadableName,
-  mockupPath
+  folderPath,
+  humanReadableName
 }) {
   return new Promise(async (resolve, reject) => {
-    if (!mockupPath) {
-      return reject('No mockup component path provided.');
-    }
-
-    if (!componentName) {
-      return reject('No page name provided.');
-    }
-
     const { prettierConfig } = getConfigs(eslintConfig);
 
-    const folderPath = path.join(mockupPath, componentName);
-    const indexFilePath = path.join(folderPath, 'index.js');
-    const jsonFilePath = path.join(folderPath, `${componentName}.json`);
-    const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
-    const pascalComponentName = kebabToPascal(componentName);
-
-    const templateContent = fs.readFileSync(
-      path.join(__dirname, 'templates/mockup-page.jsx'),
-      { encoding: 'utf-8' }
-    );
-
-    const renamedSource = renameJSXTransform(
-      templateContent,
-      'component',
-      componentName
-    );
-
-    const sourceWithRenamedImport = renameImportTransform(
-      renamedSource,
-      componentName
-    );
-
-    const jsxFileContent = prettier.format(
-      `// ${humanReadableName || pascalComponentName}\n` +
-        sourceWithRenamedImport,
-      prettierConfig
-    );
-
-    const indexFileContent = prettier.format(
-      generateIndexFile(componentName),
-      prettierConfig
-    );
-
     try {
-      ensureEmptyFolder(folderPath);
-      await fsExtra.ensureDir(folderPath);
+      validateFolderPath(folderPath);
+      assert(componentName, 'No page name provided.');
+
+      const componentPath = path.join(folderPath, componentName);
+      const indexFilePath = path.join(componentPath, 'index.js');
+      const jsonFilePath = path.join(componentPath, `${componentName}.json`);
+      const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
+      const pascalComponentName = kebabToPascal(componentName);
+
+      const templateContent = fs.readFileSync(
+        path.join(__dirname, 'templates/mockup-page.jsx'),
+        { encoding: 'utf-8' }
+      );
+
+      const renamedSource = renameJSXTransform(
+        templateContent,
+        'component',
+        componentName
+      );
+
+      const sourceWithRenamedImport = renameImportTransform(
+        renamedSource,
+        componentName
+      );
+
+      const jsxFileContent = prettier.format(
+        `// ${humanReadableName || pascalComponentName}\n` +
+          sourceWithRenamedImport,
+        prettierConfig
+      );
+
+      const indexFileContent = prettier.format(
+        generateIndexFile(componentName),
+        prettierConfig
+      );
+      ensureEmptyFolder(componentPath);
+      await fsExtra.ensureDir(componentPath);
 
       const messages = [
         writeFile(jsxFilePath, jsxFileContent),

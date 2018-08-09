@@ -1,4 +1,5 @@
 /* eslint-env node */
+const assert = require('assert');
 const chalk = require('chalk');
 const fsExtra = require('fs-extra');
 const path = require('path');
@@ -7,43 +8,41 @@ const prettier = require('prettier');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
-const lastSlug = require('./utils/last-slug');
 const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
-const validatePaths = require('./utils/validate-paths');
+const validateFolderPath = require('./utils/validate-folder-path');
 const writeFile = require('./utils/write-file');
 
 module.exports = function({
-  basePath,
+  componentName,
   eslintConfig,
-  pathOrName,
+  folderPath,
   shouldBeStateful
 }) {
   return new Promise(async (resolve, reject) => {
-    validatePaths({ basePath, pathOrName });
-
     const { prettierConfig } = getConfigs(eslintConfig);
 
-    const isPath = pathOrName.indexOf(path.sep) !== -1;
-    const componentName = isPath ? lastSlug(pathOrName) : pathOrName;
-    const folderPath = path.join(basePath, pathOrName);
-    const indexFilePath = path.join(folderPath, 'index.js');
-    const jsxFilePath = path.join(folderPath, `${componentName}.jsx`);
-    const scssFilePath = path.join(folderPath, `${componentName}.scss`);
-
-    const templates = {
-      stateful: path.join(__dirname, './templates/stateful-component.jsx'),
-      stateless: path.join(__dirname, './templates/stateless-component.jsx')
-    };
-
-    const indexFileContent = prettier.format(
-      generateIndexFile(componentName),
-      prettierConfig
-    );
-
     try {
-      ensureEmptyFolder(folderPath);
-      await fsExtra.ensureDir(folderPath);
+      validateFolderPath(folderPath);
+      assert(componentName, 'No component name provided.');
+
+      const componentPath = path.join(folderPath, componentName);
+      const indexFilePath = path.join(componentPath, 'index.js');
+      const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
+      const scssFilePath = path.join(componentPath, `${componentName}.scss`);
+
+      const templates = {
+        stateful: path.join(__dirname, './templates/stateful-component.jsx'),
+        stateless: path.join(__dirname, './templates/stateless-component.jsx')
+      };
+
+      const indexFileContent = prettier.format(
+        generateIndexFile(componentName),
+        prettierConfig
+      );
+
+      ensureEmptyFolder(componentPath);
+      await fsExtra.ensureDir(componentPath);
 
       const jsxFileContent = readFile(
         shouldBeStateful ? templates.stateful : templates.stateless

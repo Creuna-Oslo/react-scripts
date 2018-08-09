@@ -1,23 +1,22 @@
 /* eslint-env node */
 const chalk = require('chalk');
+const path = require('path');
 const prettier = require('prettier');
 
-const getComponent = require('./utils/get-component');
 const getConfigs = require('./utils/get-configs');
 const readFile = require('./utils/read-file');
 const toStatefulTransform = require('./transforms/to-stateful');
+const validateFilePath = require('./utils/validate-file-path');
 const writeFile = require('./utils/write-file');
 
-module.exports = function({ basePath, eslintConfig, pathOrName }) {
+module.exports = function({ eslintConfig, filePath }) {
   return new Promise((resolve, reject) => {
     const { prettierConfig } = getConfigs(eslintConfig);
 
     try {
-      const { componentName, filePath } = getComponent({
-        basePath,
-        pathOrName
-      });
+      validateFilePath(filePath);
 
+      const componentName = path.basename(filePath, '.jsx');
       const fileContent = readFile(filePath);
 
       const newFileContent = prettier.format(

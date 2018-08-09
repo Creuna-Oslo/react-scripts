@@ -19,7 +19,7 @@ test.cb('New page', t => {
 
   newPage({
     componentName,
-    mockupPath: tempDir
+    folderPath: tempDir
   }).then(() => {
     t.snapshot(
       fs.readFileSync(path.join(componentPath, `${componentName}.jsx`), 'utf-8')
@@ -27,4 +27,26 @@ test.cb('New page', t => {
     t.deepEqual(fs.readdirSync(componentPath), expectedFilesNames);
     t.end();
   });
+});
+
+const throwsTemplate = (t, options) => {
+  newPage({})
+    .then(() => {
+      t.fail();
+      t.end();
+    })
+    .catch(() => {
+      t.pass();
+      t.end();
+    });
+};
+
+test.cb('Throws on missing name', throwsTemplate, {
+  folderPath: tempy.directory()
+});
+
+test.cb('Throws on missing path', throwsTemplate, { componentName: 'a' });
+test.cb('Throws on non-existing path', throwsTemplate, {
+  componentName: 'a',
+  folderPath: 'a/b'
 });

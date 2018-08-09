@@ -11,22 +11,15 @@ test.cb('To stateless', t => {
 
   const componentName = 'component-stateful';
   const tempDir = tempy.directory();
+  const filePath = path.join(tempDir, componentName, `${componentName}.jsx`);
 
   fsExtra.copySync(
     path.join(__dirname, '..', 'test-components', componentName),
     path.join(tempDir, componentName)
   );
 
-  toStateless({
-    basePath: tempDir,
-    pathOrName: componentName
-  }).then(() => {
-    t.snapshot(
-      fs.readFileSync(
-        path.join(tempDir, componentName, `${componentName}.jsx`),
-        'utf-8'
-      )
-    );
+  toStateless({ filePath }).then(() => {
+    t.snapshot(fs.readFileSync(filePath, 'utf-8'));
     t.end();
   });
 });

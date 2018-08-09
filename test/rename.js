@@ -26,9 +26,8 @@ test.cb('Rename', t => {
   ];
 
   rename({
-    basePath: tempDir,
-    newComponentName: newComponentName,
-    pathOrName: componentName
+    filePath: path.join(tempDir, componentName, `${componentName}.jsx`),
+    newComponentName: newComponentName
   }).then(() => {
     t.deepEqual(
       expectedFileNames,
