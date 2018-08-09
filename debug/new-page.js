@@ -6,7 +6,7 @@ const newPage = require('../source/new-page');
 
 newPage({
   componentName: process.argv[2] || 'test-page',
-  mockupPath: path.join(__dirname, '..', 'dist'),
+  folderPath: path.join(__dirname, '..', 'dist'),
   humanReadableName: process.argv[3]
 })
   .then(({ messages }) => {

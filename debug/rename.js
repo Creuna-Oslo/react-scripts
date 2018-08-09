@@ -4,10 +4,17 @@ const path = require('path');
 
 const rename = require('../source/rename');
 
+const componentName = process.argv[2];
+
 rename({
-  basePath: path.join(__dirname, '..', 'dist'),
-  newComponentName: process.argv[3] || 'new-component',
-  pathOrName: process.argv[2] || 'test-component'
+  filePath: path.join(
+    __dirname,
+    '..',
+    'dist',
+    componentName,
+    `${componentName}.jsx`
+  ),
+  newComponentName: process.argv[3] || 'new-component'
 })
   .then(({ messages }) => {
     messages.forEach(({ emoji, text }) => console.log(`${emoji} ${text}`));

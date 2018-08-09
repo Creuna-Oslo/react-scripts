@@ -4,9 +4,16 @@ const path = require('path');
 
 const toStateful = require('../source/to-stateful');
 
+const componentName = process.argv[2];
+
 toStateful({
-  basePath: path.join(__dirname, '..', 'dist'),
-  pathOrName: process.argv[2] || 'test-component'
+  filePath: path.join(
+    __dirname,
+    '..',
+    'dist',
+    componentName,
+    `${componentName}.jsx`
+  )
 })
   .then(({ messages }) => {
     messages.forEach(({ emoji, text }) => console.log(`${emoji} ${text}`));
