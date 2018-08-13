@@ -12,7 +12,6 @@ const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
 const renameImportTransform = require('./transforms/rename-import-json');
 const renameJSXTransform = require('./transforms/rename-jsx');
-const validateFolderPath = require('./utils/validate-folder-path');
 const writeFile = require('./utils/write-file');
 
 module.exports = function({
@@ -25,7 +24,7 @@ module.exports = function({
     const { prettierConfig } = getConfigs(eslintConfig);
 
     try {
-      validateFolderPath(folderPath);
+      assert(folderPath, 'No path provided.');
       assert(componentName, 'No page name provided.');
 
       const componentPath = path.join(folderPath, componentName);
