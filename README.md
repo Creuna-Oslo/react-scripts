@@ -4,7 +4,7 @@ Functions for creating and editing React components.
 
 We recommend running these from [@creuna/cli](https://github.com/Creuna-Oslo/cli).
 
-If you want to use these functions from JavaScript, this is the right module for you.
+If you want to use these functions from Node.js, this is the right module for you.
 
 ## API
 

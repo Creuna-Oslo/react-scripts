@@ -5,8 +5,8 @@ const path = require('path');
 const newComponent = require('../source/new-component');
 
 newComponent({
-  componentsPath: path.join(__dirname, '..', 'dist'),
-  pathOrName: process.argv[2] || 'test-component',
+  componentName: process.argv[2] || 'test-component',
+  folderPath: path.join(__dirname, '..', 'dist'),
   shouldBeStateful: process.argv.indexOf('-s') !== -1
 })
   .then(({ messages }) => {

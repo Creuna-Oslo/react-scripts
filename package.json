@@ -1,6 +1,6 @@
 {
   "name": "@creuna/react-scripts",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Utility scripts for React projects",
   "author": "Asbjørn Hegdahl <asbjorn.hegdahl@creuna.no>",
   "contributors": [
@@ -34,6 +34,7 @@
   "devDependencies": {
     "ava": "^0.25.0",
     "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.6.0"
+    "eslint-plugin-prettier": "^2.6.0",
+    "tempy": "^0.2.1"
   }
 }
