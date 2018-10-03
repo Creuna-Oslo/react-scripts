@@ -1,4 +1,4 @@
-const t = require('babel-types');
+const t = require('@babel/types');
 
 // Replaces 'x' with 'this.props.x'
 function addThisDotProps(path) {

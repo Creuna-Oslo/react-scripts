@@ -2,7 +2,7 @@ const generate = require('@babel/generator').default;
 const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
-const t = require('babel-types');
+const t = require('@babel/types');
 
 const { isDestructuredPropsReference } = require('./babel-utils');
 
