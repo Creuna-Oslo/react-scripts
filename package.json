@@ -37,8 +37,8 @@
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "^3.0.0",
     "tempy": "^0.2.1"
   }
 }
