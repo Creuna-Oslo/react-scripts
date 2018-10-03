@@ -20,7 +20,8 @@ module.exports = function(sourceCode, eslintrc) {
     parserOptions: eslintrc.parserOptions,
     rules: {
       'react/prefer-stateless-function': 1
-    }
+    },
+    settings: eslintrc.settings
   });
   const fatalError = errors.find(error => error.fatal);
 

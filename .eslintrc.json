@@ -16,6 +16,11 @@
     },
     "sourceType": "module"
   },
+  "settings": {
+    "react": {
+      "version": "16.4"
+    }
+  },
   "rules": {
     "prettier/prettier": [
       "warn",

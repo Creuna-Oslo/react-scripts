@@ -5,6 +5,7 @@ const path = require('path');
 const tempy = require('tempy');
 
 const toStateless = require('../source/to-stateless');
+const eslintConfig = require('../.eslintrc.json');
 
 test.cb('To stateless', t => {
   t.plan(1);
@@ -18,7 +19,7 @@ test.cb('To stateless', t => {
     path.join(tempDir, componentName)
   );
 
-  toStateless({ filePath }).then(() => {
+  toStateless({ eslintConfig, filePath }).then(() => {
     t.snapshot(fs.readFileSync(filePath, 'utf-8'));
     t.end();
   });
