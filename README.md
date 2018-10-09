@@ -19,3 +19,7 @@ This module exports one object containing all the functions.
   toStateless; // Convert component to stateless
 }
 ```
+
+## Eslint config
+
+If you have `settings.react.version` set in your eslint config, it's really important that the version follows the format described in the [docs](https://www.npmjs.com/package/eslint-plugin-react). If the wrong format is used, the scripts might not work.

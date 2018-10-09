@@ -1,7 +1,7 @@
 const generate = require('@babel/generator').default;
 const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
-const t = require('babel-types');
+const t = require('@babel/types');
 
 module.exports = function(sourceCode, componentName) {
   const syntaxTree = parse(sourceCode, {
