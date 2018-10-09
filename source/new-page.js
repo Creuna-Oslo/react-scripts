@@ -11,7 +11,7 @@ const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
 const renameDataImport = require('./transforms/rename-data-import');
-const renameJSXTransform = require('./transforms/rename-jsx');
+const renameJSX = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
 const dataFileTemplates = {
@@ -49,7 +49,7 @@ module.exports = function({
         { encoding: 'utf-8' }
       );
 
-      const renamedSource = renameJSXTransform(
+      const renamedSource = renameJSX(
         templateContent,
         'component',
         componentName
