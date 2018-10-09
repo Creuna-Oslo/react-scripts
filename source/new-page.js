@@ -14,8 +14,14 @@ const renameImportTransform = require('./transforms/rename-import-json');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
+const emptyFileContent = {
+  json: '{}',
+  js: 'export default {};'
+};
+
 module.exports = function({
   componentName,
+  dataFileExtension = 'json',
   eslintConfig,
   folderPath,
   humanReadableName
@@ -30,7 +36,10 @@ module.exports = function({
 
       const componentPath = path.join(folderPath, componentName);
       const indexFilePath = path.join(componentPath, 'index.js');
-      const jsonFilePath = path.join(componentPath, `${componentName}.json`);
+      const dataFilePath = path.join(
+        componentPath,
+        `${componentName}.${dataFileExtension}`
+      );
       const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
       const pascalComponentName = kebabToPascal(componentName);
 
@@ -56,16 +65,18 @@ module.exports = function({
         prettierConfig
       );
 
+      const dataFileContent = emptyFileContent[dataFileExtension] || '';
       const indexFileContent = prettier.format(
         generateIndexFile(componentName),
         prettierConfig
       );
+
       ensureEmptyFolder(componentPath);
       await fsExtra.ensureDir(componentPath);
 
       const messages = [
         writeFile(jsxFilePath, jsxFileContent),
-        writeFile(jsonFilePath, '{}'),
+        writeFile(dataFilePath, dataFileContent),
         writeFile(indexFilePath, indexFileContent)
       ];
 

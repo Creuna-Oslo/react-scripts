@@ -5,13 +5,14 @@ const tempy = require('tempy');
 
 const newPage = require('../source/new-page');
 
-const runNewPage = componentName =>
+const runNewPage = (componentName, dataFileExtension) =>
   new Promise(resolve => {
     const folderPath = tempy.directory();
     const componentPath = path.join(folderPath, componentName);
 
     newPage({
       componentName,
+      dataFileExtension,
       folderPath
     }).then(() => {
       resolve(componentPath);
@@ -30,6 +31,23 @@ test.cb('New page', t => {
       'component.jsx',
       'index.js'
     ]);
+    t.end();
+  });
+});
+
+test.cb('New page with js data file', t => {
+  t.plan(2);
+
+  runNewPage('component', 'js').then(componentPath => {
+    t.deepEqual(fs.readdirSync(componentPath), [
+      'component.js',
+      'component.jsx',
+      'index.js'
+    ]);
+    t.is(
+      fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8'),
+      'export default {};'
+    );
     t.end();
   });
 });
