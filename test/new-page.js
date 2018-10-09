@@ -5,26 +5,31 @@ const tempy = require('tempy');
 
 const newPage = require('../source/new-page');
 
+const runNewPage = componentName =>
+  new Promise(resolve => {
+    const folderPath = tempy.directory();
+    const componentPath = path.join(folderPath, componentName);
+
+    newPage({
+      componentName,
+      folderPath
+    }).then(() => {
+      resolve(componentPath);
+    });
+  });
+
 test.cb('New page', t => {
   t.plan(2);
 
-  const componentName = 'component';
-  const expectedFilesNames = [
-    `${componentName}.json`,
-    `${componentName}.jsx`,
-    'index.js'
-  ];
-  const tempDir = tempy.directory();
-  const componentPath = path.join(tempDir, componentName);
-
-  newPage({
-    componentName,
-    folderPath: tempDir
-  }).then(() => {
+  runNewPage('component').then(componentPath => {
     t.snapshot(
-      fs.readFileSync(path.join(componentPath, `${componentName}.jsx`), 'utf-8')
+      fs.readFileSync(path.join(componentPath, 'component.jsx'), 'utf-8')
     );
-    t.deepEqual(fs.readdirSync(componentPath), expectedFilesNames);
+    t.deepEqual(fs.readdirSync(componentPath), [
+      'component.json',
+      'component.jsx',
+      'index.js'
+    ]);
     t.end();
   });
 });
