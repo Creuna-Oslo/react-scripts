@@ -26,6 +26,7 @@ module.exports = function({
     try {
       assert(folderPath, 'No path provided.');
       assert(componentName, 'No page name provided.');
+      assert(fs.existsSync(folderPath), `Path '${folderPath}' does not exist.`);
 
       const componentPath = path.join(folderPath, componentName);
       const indexFilePath = path.join(componentPath, 'index.js');

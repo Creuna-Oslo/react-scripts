@@ -30,7 +30,7 @@ test.cb('New page', t => {
 });
 
 const throwsTemplate = (t, options) => {
-  newPage({})
+  newPage(options)
     .then(() => {
       t.fail();
       t.end();
