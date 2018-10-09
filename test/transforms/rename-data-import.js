@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const test = require('ava');
 
-const renameDataImport = require('../../source/transforms/rename-import-json');
+const renameDataImport = require('../../source/transforms/rename-data-import');
 
 const templateSource = fs.readFileSync(
   path.join(__dirname, '../../source/templates/mockup-page.jsx'),

@@ -10,7 +10,7 @@ const prettier = require('prettier');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
-const renameImportTransform = require('./transforms/rename-import-json');
+const renameDataImport = require('./transforms/rename-data-import');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
@@ -54,9 +54,10 @@ module.exports = function({
         componentName
       );
 
-      const sourceWithRenamedImport = renameImportTransform(
+      const sourceWithRenamedImport = renameDataImport(
         renamedSource,
-        componentName
+        componentName,
+        dataFileExtension
       );
 
       const jsxFileContent = prettier.format(
