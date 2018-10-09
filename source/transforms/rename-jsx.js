@@ -42,7 +42,7 @@ module.exports = function(sourceCode, componentName, newComponentName) {
     }
   });
 
-  const { code } = generate(syntaxTree);
+  const { code } = generate(syntaxTree, { retainLines: true });
 
   return code;
 };
