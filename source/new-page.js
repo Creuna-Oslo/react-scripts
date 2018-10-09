@@ -14,7 +14,7 @@ const renameDataImport = require('./transforms/rename-data-import');
 const renameJSXTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-const emptyFileContent = {
+const dataFileTemplates = {
   json: '{}',
   js: 'export default {};'
 };
@@ -66,7 +66,7 @@ module.exports = function({
         prettierConfig
       );
 
-      const dataFileContent = emptyFileContent[dataFileExtension] || '';
+      const dataFileContent = dataFileTemplates[dataFileExtension] || '';
       const indexFileContent = prettier.format(
         generateIndexFile(componentName),
         prettierConfig
