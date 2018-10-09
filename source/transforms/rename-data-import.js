@@ -32,7 +32,7 @@ module.exports = function(
     }
   });
 
-  const { code } = generate(syntaxTree);
+  const { code } = generate(syntaxTree, { retainLines: true });
 
   return code;
 };
