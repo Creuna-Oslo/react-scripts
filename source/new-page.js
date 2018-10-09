@@ -22,6 +22,7 @@ const dataFileTemplates = {
 module.exports = function({
   componentName,
   dataFileExtension = 'json',
+  dataFileContent = dataFileTemplates.json,
   eslintConfig,
   folderPath,
   humanReadableName
@@ -66,7 +67,9 @@ module.exports = function({
         prettierConfig
       );
 
-      const dataFileContent = dataFileTemplates[dataFileExtension] || '';
+      const staticDataFileContent =
+        dataFileTemplates[dataFileExtension] || dataFileContent || '';
+
       const indexFileContent = prettier.format(
         generateIndexFile(componentName),
         prettierConfig
@@ -77,7 +80,7 @@ module.exports = function({
 
       const messages = [
         writeFile(jsxFilePath, jsxFileContent),
-        writeFile(dataFilePath, dataFileContent),
+        writeFile(dataFilePath, staticDataFileContent),
         writeFile(indexFilePath, indexFileContent)
       ];
 
