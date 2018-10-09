@@ -4,6 +4,7 @@ const path = require('path');
 const tempy = require('tempy');
 
 const newPage = require('../source/new-page');
+const eslintConfig = require('../.eslintrc.json');
 
 const runNewPage = (componentName, dataFileExtension) =>
   new Promise(resolve => {
@@ -13,6 +14,7 @@ const runNewPage = (componentName, dataFileExtension) =>
     newPage({
       componentName,
       dataFileExtension,
+      eslintConfig,
       folderPath
     }).then(() => {
       resolve(componentPath);
