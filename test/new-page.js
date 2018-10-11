@@ -41,20 +41,24 @@ test.cb('New page', t => {
 test.cb('New page with js data file', t => {
   t.plan(2);
 
-  runNewPage({ componentName: 'component', dataFileExtension: 'js' }).then(
-    componentPath => {
-      t.deepEqual(fs.readdirSync(componentPath), [
-        'component.js',
-        'component.jsx',
-        'index.js'
-      ]);
-      t.is(
-        fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8'),
-        'export default {};'
-      );
-      t.end();
-    }
-  );
+  const dataFileContent = 'export default { a: 1 };';
+
+  runNewPage({
+    componentName: 'component',
+    dataFileExtension: 'js',
+    dataFileContent
+  }).then(componentPath => {
+    t.deepEqual(fs.readdirSync(componentPath), [
+      'component.js',
+      'component.jsx',
+      'index.js'
+    ]);
+    t.is(
+      dataFileContent,
+      fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
+    );
+    t.end();
+  });
 });
 
 test.cb('New page with yaml data file and custom template', t => {
