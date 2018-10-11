@@ -10,12 +10,19 @@ const prettier = require('prettier');
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
-const renameImportTransform = require('./transforms/rename-import-json');
-const renameJSXTransform = require('./transforms/rename-jsx');
+const renameDataImport = require('./transforms/rename-data-import');
+const renameJSX = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
+
+const dataFileTemplates = {
+  json: '{}',
+  js: 'export default {};'
+};
 
 module.exports = function({
   componentName,
+  dataFileExtension = 'json',
+  dataFileContent = dataFileTemplates.json,
   eslintConfig,
   folderPath,
   humanReadableName
@@ -26,10 +33,14 @@ module.exports = function({
     try {
       assert(folderPath, 'No path provided.');
       assert(componentName, 'No page name provided.');
+      assert(fs.existsSync(folderPath), `Path '${folderPath}' does not exist.`);
 
       const componentPath = path.join(folderPath, componentName);
       const indexFilePath = path.join(componentPath, 'index.js');
-      const jsonFilePath = path.join(componentPath, `${componentName}.json`);
+      const dataFilePath = path.join(
+        componentPath,
+        `${componentName}.${dataFileExtension}`
+      );
       const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
       const pascalComponentName = kebabToPascal(componentName);
 
@@ -38,15 +49,16 @@ module.exports = function({
         { encoding: 'utf-8' }
       );
 
-      const renamedSource = renameJSXTransform(
+      const renamedSource = renameJSX(
         templateContent,
         'component',
         componentName
       );
 
-      const sourceWithRenamedImport = renameImportTransform(
+      const sourceWithRenamedImport = renameDataImport(
         renamedSource,
-        componentName
+        componentName,
+        dataFileExtension
       );
 
       const jsxFileContent = prettier.format(
@@ -55,16 +67,20 @@ module.exports = function({
         prettierConfig
       );
 
+      const staticDataFileContent =
+        dataFileTemplates[dataFileExtension] || dataFileContent || '';
+
       const indexFileContent = prettier.format(
         generateIndexFile(componentName),
         prettierConfig
       );
+
       ensureEmptyFolder(componentPath);
       await fsExtra.ensureDir(componentPath);
 
       const messages = [
         writeFile(jsxFilePath, jsxFileContent),
-        writeFile(jsonFilePath, '{}'),
+        writeFile(dataFilePath, staticDataFileContent),
         writeFile(indexFilePath, indexFileContent)
       ];
 

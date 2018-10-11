@@ -3,7 +3,11 @@ const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const t = require('@babel/types');
 
-module.exports = function(sourceCode, componentName) {
+module.exports = function(
+  sourceCode,
+  componentName,
+  dataFileExtension = 'json'
+) {
   const syntaxTree = parse(sourceCode, {
     plugins: ['jsx', 'classProperties'],
     sourceType: 'module'
@@ -21,12 +25,14 @@ module.exports = function(sourceCode, componentName) {
       ) {
         path
           .get('source')
-          .replaceWith(t.stringLiteral(`./${componentName}.json`));
+          .replaceWith(
+            t.stringLiteral(`./${componentName}.${dataFileExtension}`)
+          );
       }
     }
   });
 
-  const { code } = generate(syntaxTree);
+  const { code } = generate(syntaxTree, { retainLines: true });
 
   return code;
 };
