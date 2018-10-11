@@ -68,7 +68,7 @@ module.exports = function({
       );
 
       const staticDataFileContent =
-        dataFileTemplates[dataFileExtension] || dataFileContent || '';
+        dataFileContent || dataFileTemplates[dataFileExtension] || '';
 
       const indexFileContent = prettier.format(
         generateIndexFile(componentName),
