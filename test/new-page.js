@@ -41,6 +41,26 @@ test.cb('New page', t => {
 test.cb('New page with js data file', t => {
   t.plan(2);
 
+  runNewPage({
+    componentName: 'component',
+    dataFileExtension: 'js'
+  }).then(componentPath => {
+    t.deepEqual(fs.readdirSync(componentPath), [
+      'component.js',
+      'component.jsx',
+      'index.js'
+    ]);
+    t.is(
+      'export default {};',
+      fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
+    );
+    t.end();
+  });
+});
+
+test.cb('New page with js data file and custom content', t => {
+  t.plan(2);
+
   const dataFileContent = 'export default { a: 1 };';
 
   runNewPage({

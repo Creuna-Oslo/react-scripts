@@ -22,7 +22,7 @@ const dataFileTemplates = {
 module.exports = function({
   componentName,
   dataFileExtension = 'json',
-  dataFileContent = dataFileTemplates.json,
+  dataFileContent,
   eslintConfig,
   folderPath,
   humanReadableName
