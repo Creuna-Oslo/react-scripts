@@ -37,7 +37,7 @@ module.exports = function({ eslintConfig, filePath }) {
         ]
       });
     } catch (error) {
-      reject(error.message);
+      reject(error.message + `\n\n${error.stack || ''}`);
     }
   });
 };

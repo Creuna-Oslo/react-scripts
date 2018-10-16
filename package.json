@@ -15,7 +15,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "ava -v"
+    "test": "ava --verbose"
   },
   "repository": {
     "type": "git",

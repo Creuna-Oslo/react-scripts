@@ -1,20 +1,26 @@
 /* eslint-disable no-console */
 const chalk = require('chalk');
+const fsExtra = require('fs-extra');
 const path = require('path');
+const tempy = require('tempy');
 
 const toStateless = require('../source/to-stateless');
 
-const componentName = process.argv[2];
+const dir = tempy.directory();
 
-// The stateful component created by newComponent has a reference to state in it which means toStateless will fail. The easiest way to get a testable stateful component is to create a stateless one and then convert it to stateful 😅
-toStateless({
-  basePath: path.join(
+fsExtra.copyFileSync(
+  path.join(
     __dirname,
     '..',
-    'dist',
-    componentName,
-    `${componentName}.jsx`
-  )
+    'test-components',
+    'component-stateful',
+    'component-stateful.jsx'
+  ),
+  path.join(dir, 'component-stateful.jsx')
+);
+
+toStateless({
+  filePath: path.join(dir, 'component-stateful.jsx')
 })
   .then(({ messages }) => {
     messages.forEach(({ emoji, text }) => console.log(`${emoji} ${text}`));

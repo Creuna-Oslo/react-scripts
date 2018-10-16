@@ -32,7 +32,8 @@ function isDestructuredPropsReference(path) {
   const bindingValue = path.scope.bindings[object.node.name].path.get('init');
 
   return (
-    (bindingValue.get('object').isThisExpression() &&
+    (bindingValue.isMemberExpression() &&
+      bindingValue.get('object').isThisExpression() &&
       bindingValue.get('property').isIdentifier({ name: 'props' })) ||
     bindingValue.isThisExpression()
   );
