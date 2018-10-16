@@ -38,6 +38,9 @@ class ComponentStateful extends React.Component {
         <p>{text}</p>
         <div>{test}</div>
         <div>{this.props.object.property}</div>
+        {this.props.array.map(element => (
+          <div key={element.id}>{element.text}</div>
+        ))}
       </div>
     );
   }

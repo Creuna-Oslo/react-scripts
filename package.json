@@ -1,6 +1,6 @@
 {
   "name": "@creuna/react-scripts",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Utility scripts for React projects",
   "author": "Asbjørn Hegdahl <asbjorn.hegdahl@creuna.no>",
   "contributors": [
@@ -15,7 +15,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "ava -v"
+    "test": "ava --verbose"
   },
   "repository": {
     "type": "git",
