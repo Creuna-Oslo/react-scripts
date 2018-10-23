@@ -25,7 +25,9 @@ module.exports = function({
   dataFileContent,
   eslintConfig,
   folderPath,
-  humanReadableName
+  groupName,
+  humanReadableName,
+  url
 }) {
   return new Promise(async (resolve, reject) => {
     const { prettierConfig } = getConfigs(eslintConfig);
@@ -61,9 +63,15 @@ module.exports = function({
         dataFileExtension
       );
 
+      const frontmatter =
+        `/*\n` +
+        (groupName ? `group: ${groupName}\n` : '') +
+        `name: ${humanReadableName || pascalComponentName}\n` +
+        `path: ${url || `/${componentName}`}\n` +
+        `*/\n\n`;
+
       const jsxFileContent = prettier.format(
-        `// ${humanReadableName || pascalComponentName}\n` +
-          sourceWithRenamedImport,
+        frontmatter + sourceWithRenamedImport,
         prettierConfig
       );
 
