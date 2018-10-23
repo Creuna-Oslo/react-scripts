@@ -45,7 +45,7 @@ module.exports = function({
       const pascalComponentName = kebabToPascal(componentName);
 
       const templateContent = fs.readFileSync(
-        path.join(__dirname, 'templates/mockup-page.jsx'),
+        path.join(__dirname, 'templates/static-site-page.jsx'),
         { encoding: 'utf-8' }
       );
 

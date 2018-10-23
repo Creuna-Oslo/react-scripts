@@ -13,7 +13,7 @@ This module exports one object containing all the functions.
 ```javascript
 {
   newComponent, // Create new component
-  newPage, // Create new mockup page
+  newPage, // Create new static site page
   rename, // Rename component
   toStateful, // Convert component to stateful
   toStateless; // Convert component to stateless

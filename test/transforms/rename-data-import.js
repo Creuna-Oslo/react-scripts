@@ -5,7 +5,7 @@ const test = require('ava');
 const renameDataImport = require('../../source/transforms/rename-data-import');
 
 const templateSource = fs.readFileSync(
-  path.join(__dirname, '../../source/templates/mockup-page.jsx'),
+  path.join(__dirname, '../../source/templates/static-site-page.jsx'),
   'utf-8'
 );
 
