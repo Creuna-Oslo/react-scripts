@@ -104,24 +104,36 @@ test.cb('New page with yaml data file and custom template', t => {
   });
 });
 
-const throwsTemplate = (t, options) => {
-  newPage(options)
-    .then(() => {
-      t.fail();
-      t.end();
-    })
-    .catch(() => {
-      t.pass();
-      t.end();
-    });
+const throwsTemplate = async (t, options, erorrMessage) => {
+  try {
+    await newPage(options);
+  } catch (error) {
+    t.is(erorrMessage, error);
+  }
 };
 
-test.cb('Throws on missing name', throwsTemplate, {
-  folderPath: tempy.directory()
-});
+test(
+  'Throws on missing name',
+  throwsTemplate,
+  {
+    folderPath: tempy.directory()
+  },
+  'No page name provided.'
+);
 
-test.cb('Throws on missing path', throwsTemplate, { componentName: 'a' });
-test.cb('Throws on non-existing path', throwsTemplate, {
-  componentName: 'a',
-  folderPath: 'a/b'
-});
+test(
+  'Throws on missing path',
+  throwsTemplate,
+  { componentName: 'a' },
+  'No path provided.'
+);
+
+test(
+  'Throws on non-existing path',
+  throwsTemplate,
+  {
+    componentName: 'a',
+    folderPath: 'a/b'
+  },
+  "Path 'a/b' does not exist."
+);
