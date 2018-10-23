@@ -6,15 +6,15 @@ const tempy = require('tempy');
 const newPage = require('../source/new-page');
 const eslintConfig = require('../.eslintrc.json');
 
-const runNewPage = ({ componentName, dataFileExtension, dataFileContent }) =>
+const runNewPage = options =>
   new Promise(resolve => {
+    const { componentName } = options;
     const folderPath = tempy.directory();
     const componentPath = path.join(folderPath, componentName);
 
     newPage({
+      ...options,
       componentName,
-      dataFileContent,
-      dataFileExtension,
       eslintConfig,
       folderPath
     }).then(() => {
@@ -22,10 +22,11 @@ const runNewPage = ({ componentName, dataFileExtension, dataFileContent }) =>
     });
   });
 
-test.cb('New page', t => {
+test('New page', async t => {
   t.plan(2);
 
-  runNewPage({ componentName: 'component' }).then(componentPath => {
+  const componentPath = await runNewPage({ componentName: 'component' });
+
     t.snapshot(
       fs.readFileSync(path.join(componentPath, 'component.jsx'), 'utf-8')
     );
@@ -34,17 +35,16 @@ test.cb('New page', t => {
       'component.jsx',
       'index.js'
     ]);
-    t.end();
-  });
 });
 
-test.cb('New page with js data file', t => {
+test('New page with js data file', async t => {
   t.plan(2);
 
-  runNewPage({
+  const componentPath = await runNewPage({
     componentName: 'component',
     dataFileExtension: 'js'
-  }).then(componentPath => {
+  });
+
     t.deepEqual(fs.readdirSync(componentPath), [
       'component.js',
       'component.jsx',
@@ -54,20 +54,19 @@ test.cb('New page with js data file', t => {
       'export default {};',
       fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
     );
-    t.end();
-  });
 });
 
-test.cb('New page with js data file and custom content', t => {
+test('New page with js data file and custom content', async t => {
   t.plan(2);
 
   const dataFileContent = 'export default { a: 1 };';
 
-  runNewPage({
+  const componentPath = await runNewPage({
     componentName: 'component',
     dataFileExtension: 'js',
     dataFileContent
-  }).then(componentPath => {
+  });
+
     t.deepEqual(fs.readdirSync(componentPath), [
       'component.js',
       'component.jsx',
@@ -77,20 +76,19 @@ test.cb('New page with js data file and custom content', t => {
       dataFileContent,
       fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
     );
-    t.end();
-  });
 });
 
-test.cb('New page with yaml data file and custom template', t => {
+test('New page with yaml data file and custom template', async t => {
   t.plan(2);
 
   const dataFileContent = 'data:\n  - "hello"';
 
-  runNewPage({
+  const componentPath = await runNewPage({
     componentName: 'component',
     dataFileExtension: 'yml',
     dataFileContent
-  }).then(componentPath => {
+  });
+
     t.deepEqual(fs.readdirSync(componentPath), [
       'component.jsx',
       'component.yml',
