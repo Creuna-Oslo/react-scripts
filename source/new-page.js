@@ -25,7 +25,9 @@ module.exports = function({
   dataFileContent,
   eslintConfig,
   folderPath,
-  humanReadableName
+  groupName,
+  humanReadableName,
+  url
 }) {
   return new Promise(async (resolve, reject) => {
     const { prettierConfig } = getConfigs(eslintConfig);
@@ -45,7 +47,7 @@ module.exports = function({
       const pascalComponentName = kebabToPascal(componentName);
 
       const templateContent = fs.readFileSync(
-        path.join(__dirname, 'templates/mockup-page.jsx'),
+        path.join(__dirname, 'templates/static-site-page.jsx'),
         { encoding: 'utf-8' }
       );
 
@@ -61,9 +63,15 @@ module.exports = function({
         dataFileExtension
       );
 
+      const frontmatter =
+        `/*\n` +
+        (groupName ? `group: ${groupName}\n` : '') +
+        (humanReadableName ? `name: ${humanReadableName}\n` : '') +
+        (url ? `path: ${url}\n` : '') +
+        `*/\n\n`;
+
       const jsxFileContent = prettier.format(
-        `// ${humanReadableName || pascalComponentName}\n` +
-          sourceWithRenamedImport,
+        frontmatter + sourceWithRenamedImport,
         prettierConfig
       );
 

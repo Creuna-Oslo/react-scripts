@@ -14,7 +14,7 @@ module.exports = function(
   });
 
   traverse(syntaxTree, {
-    // Rename json file import in mockup-page.jsx template
+    // Rename json file import in static-site-page.jsx template
     ImportDeclaration(path) {
       if (
         path

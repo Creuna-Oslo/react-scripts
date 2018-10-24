@@ -6,15 +6,15 @@ const tempy = require('tempy');
 const newPage = require('../source/new-page');
 const eslintConfig = require('../.eslintrc.json');
 
-const runNewPage = ({ componentName, dataFileExtension, dataFileContent }) =>
+const runNewPage = options =>
   new Promise(resolve => {
+    const { componentName } = options;
     const folderPath = tempy.directory();
     const componentPath = path.join(folderPath, componentName);
 
     newPage({
+      ...options,
       componentName,
-      dataFileContent,
-      dataFileExtension,
       eslintConfig,
       folderPath
     }).then(() => {
@@ -22,106 +22,142 @@ const runNewPage = ({ componentName, dataFileExtension, dataFileContent }) =>
     });
   });
 
-test.cb('New page', t => {
+test('New page', async t => {
   t.plan(2);
 
-  runNewPage({ componentName: 'component' }).then(componentPath => {
-    t.snapshot(
-      fs.readFileSync(path.join(componentPath, 'component.jsx'), 'utf-8')
-    );
-    t.deepEqual(fs.readdirSync(componentPath), [
-      'component.json',
-      'component.jsx',
-      'index.js'
-    ]);
-    t.end();
-  });
+  const componentPath = await runNewPage({ componentName: 'component' });
+
+  t.snapshot(
+    fs.readFileSync(path.join(componentPath, 'component.jsx'), 'utf-8')
+  );
+  t.deepEqual(fs.readdirSync(componentPath), [
+    'component.json',
+    'component.jsx',
+    'index.js'
+  ]);
 });
 
-test.cb('New page with js data file', t => {
+test('New page with js data file', async t => {
   t.plan(2);
 
-  runNewPage({
+  const componentPath = await runNewPage({
     componentName: 'component',
     dataFileExtension: 'js'
-  }).then(componentPath => {
-    t.deepEqual(fs.readdirSync(componentPath), [
-      'component.js',
-      'component.jsx',
-      'index.js'
-    ]);
-    t.is(
-      'export default {};',
-      fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
-    );
-    t.end();
   });
+
+  t.deepEqual(fs.readdirSync(componentPath), [
+    'component.js',
+    'component.jsx',
+    'index.js'
+  ]);
+  t.is(
+    'export default {};',
+    fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
+  );
 });
 
-test.cb('New page with js data file and custom content', t => {
+test('New page with js data file and custom content', async t => {
   t.plan(2);
 
   const dataFileContent = 'export default { a: 1 };';
 
-  runNewPage({
+  const componentPath = await runNewPage({
     componentName: 'component',
     dataFileExtension: 'js',
     dataFileContent
-  }).then(componentPath => {
-    t.deepEqual(fs.readdirSync(componentPath), [
-      'component.js',
-      'component.jsx',
-      'index.js'
-    ]);
-    t.is(
-      dataFileContent,
-      fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
-    );
-    t.end();
   });
+
+  t.deepEqual(fs.readdirSync(componentPath), [
+    'component.js',
+    'component.jsx',
+    'index.js'
+  ]);
+  t.is(
+    dataFileContent,
+    fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
+  );
 });
 
-test.cb('New page with yaml data file and custom template', t => {
+test('New page with yaml data file and custom template', async t => {
   t.plan(2);
 
   const dataFileContent = 'data:\n  - "hello"';
 
-  runNewPage({
+  const componentPath = await runNewPage({
     componentName: 'component',
     dataFileExtension: 'yml',
     dataFileContent
-  }).then(componentPath => {
-    t.deepEqual(fs.readdirSync(componentPath), [
-      'component.jsx',
-      'component.yml',
-      'index.js'
-    ]);
-    t.is(
-      dataFileContent,
-      fs.readFileSync(path.join(componentPath, 'component.yml'), 'utf-8')
-    );
-    t.end();
   });
+
+  t.deepEqual(fs.readdirSync(componentPath), [
+    'component.jsx',
+    'component.yml',
+    'index.js'
+  ]);
+  t.is(
+    dataFileContent,
+    fs.readFileSync(path.join(componentPath, 'component.yml'), 'utf-8')
+  );
 });
 
-const throwsTemplate = (t, options) => {
-  newPage(options)
-    .then(() => {
-      t.fail();
-      t.end();
-    })
-    .catch(() => {
-      t.pass();
-      t.end();
-    });
+test('With page name, group and url', async t => {
+  const componentPath = await runNewPage({
+    componentName: 'component',
+    groupName: 'Some group',
+    humanReadableName: 'Some page',
+    url: '/some-page'
+  });
+
+  const fileContent = fs.readFileSync(
+    path.join(componentPath, 'component.jsx'),
+    'utf-8'
+  );
+
+  const expectedLines =
+    `/*\n` +
+    `group: Some group\n` +
+    `name: Some page\n` +
+    `path: /some-page\n` +
+    `*/`;
+
+  const frontMatterLines = fileContent
+    .split('\n')
+    .slice(0, 5)
+    .join('\n');
+
+  t.is(expectedLines, frontMatterLines);
+});
+
+const throwsTemplate = async (t, options, erorrMessage) => {
+  try {
+    await newPage(options);
+  } catch (error) {
+    t.is(erorrMessage, error);
+  }
 };
 
-test.cb('Throws on missing name', throwsTemplate, {
-  folderPath: tempy.directory()
-});
+test(
+  'Throws on missing name',
+  throwsTemplate,
+  {
+    folderPath: tempy.directory()
+  },
+  'No page name provided.'
+);
 
-test.cb('Throws on missing path', throwsTemplate, { componentName: 'a' });
-test.cb('Throws on non-existing path', throwsTemplate, {
-  componentName: 'a',
-  folderPath: 'a/b'
-});
+test(
+  'Throws on missing path',
+  throwsTemplate,
+  { componentName: 'a' },
+  'No path provided.'
+);
+
+test(
+  'Throws on non-existing path',
+  throwsTemplate,
+  {
+    componentName: 'a',
+    folderPath: 'a/b'
+  },
+  "Path 'a/b' does not exist."
+);
