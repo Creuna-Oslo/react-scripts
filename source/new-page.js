@@ -66,8 +66,8 @@ module.exports = function({
       const frontmatter =
         `/*\n` +
         (groupName ? `group: ${groupName}\n` : '') +
-        `name: ${humanReadableName || pascalComponentName}\n` +
-        `path: ${url || `/${componentName}`}\n` +
+        (humanReadableName ? `name: ${humanReadableName}\n` : '') +
+        (url ? `path: ${url}\n` : '') +
         `*/\n\n`;
 
       const jsxFileContent = prettier.format(
