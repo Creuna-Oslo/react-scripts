@@ -2,7 +2,7 @@
 
 [https://github.com/Creuna-Oslo/react-scripts/pull/24]()
 
-- Fixed issue that made `get-configs` crash when user was missing eslint.config file.
+- Fixes issue that made `get-configs` unable to handle null argument.
 
 # 4.0.0
 
