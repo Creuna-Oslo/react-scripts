@@ -20,13 +20,12 @@ const getPrettierConfig = eslintConfig => {
 };
 
 // Get configs or fallbacks based on provided eslint config
-module.exports = function(eslintConfig) {
-  eslintConfig = eslintConfig || {};
+module.exports = function(eslintConfig = {}) {
   return {
     eslintConfig: Object.assign(eslintConfigDefault, eslintConfig),
     prettierConfig: Object.assign(
       { parser: 'babylon' },
-      getPrettierConfig(eslintConfig)
+      getPrettierConfig(eslintConfig || {})
     )
   };
 };

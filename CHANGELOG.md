@@ -1,3 +1,9 @@
+# 4.0.1
+
+[https://github.com/Creuna-Oslo/react-scripts/pull/24]()
+
+- Fixed issue that made `get-configs` crash when user was missing eslint.config file.
+
 # 4.0.0
 
 [https://github.com/Creuna-Oslo/react-scripts/pull/23]()
