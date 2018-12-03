@@ -1,3 +1,9 @@
+# 4.0.1
+
+[https://github.com/Creuna-Oslo/react-scripts/pull/24]()
+
+- Fixes issue that made `get-configs` unable to handle null argument.
+
 # 4.0.0
 
 [https://github.com/Creuna-Oslo/react-scripts/pull/23]()
