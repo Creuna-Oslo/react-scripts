@@ -1,3 +1,9 @@
+# 4.0.2
+
+[https://github.com/Creuna-Oslo/react-scripts/pull/27]()
+
+- Upgrades dependencies
+
 # 4.0.1
 
 [https://github.com/Creuna-Oslo/react-scripts/pull/24]()
