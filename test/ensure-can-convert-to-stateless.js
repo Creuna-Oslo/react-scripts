@@ -1,21 +1,20 @@
-const fs = require('fs');
 const path = require('path');
 const test = require('ava');
+
+const { readFixture } = require('./helpers/read');
 
 const ensureCanConvertToStateless = require('../source/utils/ensure-can-convert-to-stateless');
 const eslintrc = require('../.eslintrc.json');
 
-const validComponentSource = fs.readFileSync(
-  path.join(__dirname, './fixtures/component-stateful/component-stateful.jsx'),
-  'utf-8'
+const validComponentSource = readFixture(
+  path.join('component-stateful', 'component-stateful.jsx')
 );
 
-const invalidComponentSource = fs.readFileSync(
+const invalidComponentSource = readFixture(
   path.join(
-    __dirname,
-    './fixtures/component-stateful-no-transform/component-stateful-no-transform.jsx'
-  ),
-  'utf-8'
+    'component-stateful-no-transform',
+    'component-stateful-no-transform.jsx'
+  )
 );
 
 test('Detects able to convert', t => {
@@ -25,7 +24,15 @@ test('Detects able to convert', t => {
 });
 
 test('Detects unable to convert', t => {
-  t.throws(() => {
+  const error = t.throws(() => {
     ensureCanConvertToStateless(invalidComponentSource, eslintrc);
   });
+
+  t.is(
+    `Component can't be converted. Make sure that there is no:
+  • state or references to state
+  • class methods
+  • refs`,
+    error.message
+  );
 });
