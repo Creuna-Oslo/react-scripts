@@ -24,7 +24,7 @@ module.exports = function(eslintConfig) {
   return {
     eslintConfig: Object.assign(eslintConfigDefault, eslintConfig),
     prettierConfig: Object.assign(
-      { parser: 'babylon' },
+      { parser: 'babel' },
       getPrettierConfig(eslintConfig || {})
     )
   };

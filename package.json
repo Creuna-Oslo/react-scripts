@@ -1,6 +1,6 @@
 {
   "name": "@creuna/react-scripts",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Utility scripts for React projects",
   "author": "Asbjørn Hegdahl <asbjorn.hegdahl@creuna.no>",
   "contributors": [
@@ -27,18 +27,18 @@
     "@babel/parser": "^7.1.2",
     "@babel/traverse": "^7.1.0",
     "@babel/types": "^7.1.2",
-    "@creuna/utils": "^0.3.4",
+    "@creuna/utils": "^1.1.0",
     "babel-eslint": "^10.0.1",
     "chalk": "^2.4.1",
-    "eslint": "^5.6.1",
-    "eslint-plugin-react": "^7.9.1",
+    "eslint": "^5.13.0",
+    "eslint-plugin-react": "^7.12.4",
     "fs-extra": "^7.0.0",
-    "prettier": "^1.13.4"
+    "prettier": "^1.16.4"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
-    "eslint-config-prettier": "^3.1.0",
-    "eslint-plugin-prettier": "^3.0.0",
+    "ava": "^1.2.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "tempy": "^0.2.1"
   }
 }
