@@ -15,6 +15,7 @@
     "README.md"
   ],
   "scripts": {
+    "dev": "ava --watch --verbose",
     "test": "ava --verbose"
   },
   "repository": {
