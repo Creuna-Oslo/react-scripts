@@ -46,9 +46,11 @@ module.exports = function({ eslintConfig, filePath, newComponentName }) {
 
       const jsxFileContent = readFile(jsxFilePath);
 
-      const newJsxFileContent = prettier.format(
-        renameJSXTransform(jsxFileContent, componentName, newComponentName),
-        prettierConfig
+      const newJsxFileContent = renameJSXTransform(
+        jsxFileContent,
+        componentName,
+        newComponentName,
+        eslintConfig
       );
 
       const indexFileContent = prettier.format(

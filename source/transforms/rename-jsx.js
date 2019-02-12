@@ -1,9 +1,18 @@
 const generate = require('@babel/generator').default;
 const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const { parse } = require('@babel/parser');
+const prettier = require('prettier');
 const traverse = require('@babel/traverse').default;
 
-module.exports = function(sourceCode, componentName, newComponentName) {
+const getConfigs = require('../utils/get-configs');
+
+module.exports = function(
+  sourceCode,
+  componentName,
+  newComponentName,
+  eslintConfig
+) {
+  const { prettierConfig } = getConfigs(eslintConfig);
   const pascalComponentName = kebabToPascal(componentName);
   const pascalNewComponentName = kebabToPascal(newComponentName);
 
@@ -44,5 +53,5 @@ module.exports = function(sourceCode, componentName, newComponentName) {
 
   const { code } = generate(syntaxTree, { retainLines: true });
 
-  return code;
+  return prettier.format(code, prettierConfig);
 };
