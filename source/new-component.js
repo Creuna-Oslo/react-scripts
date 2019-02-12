@@ -48,9 +48,11 @@ module.exports = function({
       );
 
       // Hard coded string name because that's what the template components are called
-      const newJsxFileContent = prettier.format(
-        renameTransform(jsxFileContent, 'component', componentName),
-        prettierConfig
+      const newJsxFileContent = renameTransform(
+        jsxFileContent,
+        'component',
+        componentName,
+        eslintConfig
       );
 
       const messages = [
