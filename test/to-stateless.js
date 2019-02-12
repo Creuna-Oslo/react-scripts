@@ -8,9 +8,11 @@ const toStateless = require('../source/to-stateless');
 const eslintConfig = require('../.eslintrc.json');
 const { readFile, readFixture } = require('./helpers/read');
 
+const fixturesPath = path.join(__dirname, 'fixtures');
+
 test('Happy path', async t => {
   const componentName = 'component-stateful';
-  const fixturePath = path.resolve(__dirname, '..', 'fixtures', componentName);
+  const fixturePath = path.join(fixturesPath, componentName);
   const tempDir = tempy.directory();
   const filePath = path.join(tempDir, componentName, `${componentName}.jsx`);
   const expected = readFixture(path.join(componentName, 'transformed.jsx'));
@@ -24,7 +26,7 @@ test('Happy path', async t => {
 
 test('With not transformable component', async t => {
   const componentName = 'component-stateful-no-transform';
-  const fixturePath = path.resolve(__dirname, '..', 'fixtures', componentName);
+  const fixturePath = path.join(fixturesPath, componentName);
   const tempDir = tempy.directory();
   const filePath = path.join(tempDir, componentName, `${componentName}.jsx`);
 

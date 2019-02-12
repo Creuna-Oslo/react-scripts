@@ -10,7 +10,7 @@ const { readFile, readFixture } = require('./helpers/read');
 
 test('To stateful', async t => {
   const componentName = 'component-stateless';
-  const fixturePath = path.resolve(__dirname, '..', 'fixtures', componentName);
+  const fixturePath = path.resolve(__dirname, 'fixtures', componentName);
   const tempDir = tempy.directory();
   const filePath = path.join(tempDir, componentName, `${componentName}.jsx`);
   const expected = readFixture(path.join(componentName, 'transformed.jsx'));

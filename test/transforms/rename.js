@@ -5,17 +5,14 @@ const test = require('ava');
 const renameTransform = require('../../source/transforms/rename-jsx');
 
 const statefulComponentSource = fs.readFileSync(
-  path.join(
-    __dirname,
-    '../../fixtures/component-stateful/component-stateful.jsx'
-  ),
+  path.join(__dirname, '../fixtures/component-stateful/component-stateful.jsx'),
   'utf-8'
 );
 
 const statelessComponentSource = fs.readFileSync(
   path.join(
     __dirname,
-    '../../fixtures/component-stateless/component-stateless.jsx'
+    '../fixtures/component-stateless/component-stateless.jsx'
   ),
   'utf-8'
 );
