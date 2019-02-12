@@ -4,7 +4,9 @@ const path = require('path');
 const tempy = require('tempy');
 
 const newPage = require('../source/new-page');
+
 const eslintConfig = require('../.eslintrc.json');
+const { readFile } = require('./helpers/read');
 
 const runNewPage = options =>
   new Promise(resolve => {
@@ -23,13 +25,26 @@ const runNewPage = options =>
   });
 
 test('New page', async t => {
-  t.plan(2);
-
   const componentPath = await runNewPage({ componentName: 'component' });
 
-  t.snapshot(
-    fs.readFileSync(path.join(componentPath, 'component.jsx'), 'utf-8')
-  );
+  const expectedJsx = `/*
+ */
+
+import React from 'react';
+import Layout from '../../layout';
+
+import content from './component.json';
+
+const Component = () => (
+  <Layout>
+    {/* ------------------------- 📝 ------------------------- */}
+  </Layout>
+);
+
+export default Component;
+`;
+
+  t.is(expectedJsx, readFile(path.join(componentPath, 'component.jsx')));
   t.deepEqual(fs.readdirSync(componentPath), [
     'component.json',
     'component.jsx',
@@ -38,8 +53,6 @@ test('New page', async t => {
 });
 
 test('New page with js data file', async t => {
-  t.plan(2);
-
   const componentPath = await runNewPage({
     componentName: 'component',
     dataFileExtension: 'js'
@@ -52,13 +65,11 @@ test('New page with js data file', async t => {
   ]);
   t.is(
     'export default {};',
-    fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
+    readFile(path.join(componentPath, 'component.js'))
   );
 });
 
 test('New page with js data file and custom content', async t => {
-  t.plan(2);
-
   const dataFileContent = 'export default { a: 1 };';
 
   const componentPath = await runNewPage({
@@ -72,15 +83,10 @@ test('New page with js data file and custom content', async t => {
     'component.jsx',
     'index.js'
   ]);
-  t.is(
-    dataFileContent,
-    fs.readFileSync(path.join(componentPath, 'component.js'), 'utf-8')
-  );
+  t.is(dataFileContent, readFile(path.join(componentPath, 'component.js')));
 });
 
 test('New page with yaml data file and custom template', async t => {
-  t.plan(2);
-
   const dataFileContent = 'data:\n  - "hello"';
 
   const componentPath = await runNewPage({
@@ -94,10 +100,7 @@ test('New page with yaml data file and custom template', async t => {
     'component.yml',
     'index.js'
   ]);
-  t.is(
-    dataFileContent,
-    fs.readFileSync(path.join(componentPath, 'component.yml'), 'utf-8')
-  );
+  t.is(dataFileContent, readFile(path.join(componentPath, 'component.yml')));
 });
 
 test('With page name, group and url', async t => {
@@ -108,10 +111,7 @@ test('With page name, group and url', async t => {
     url: '/some-page'
   });
 
-  const fileContent = fs.readFileSync(
-    path.join(componentPath, 'component.jsx'),
-    'utf-8'
-  );
+  const fileContent = readFile(path.join(componentPath, 'component.jsx'));
 
   const expectedLines =
     `/*\n` +
