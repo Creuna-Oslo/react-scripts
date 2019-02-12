@@ -7,7 +7,7 @@ const statelessTransform = require('../../source/transforms/to-stateless');
 const statefulComponentSource = fs.readFileSync(
   path.join(
     __dirname,
-    '../../test-components/component-stateful/component-stateful.jsx'
+    '../../fixtures/component-stateful/component-stateful.jsx'
   ),
   'utf-8'
 );

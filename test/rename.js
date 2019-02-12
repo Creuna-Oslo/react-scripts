@@ -15,7 +15,7 @@ test.cb('Rename', t => {
   const newComponentPath = path.join(tempDir, newComponentName);
 
   fsExtra.copySync(
-    path.join(__dirname, '..', 'test-components', componentName),
+    path.join(__dirname, '..', 'fixtures', componentName),
     path.join(tempDir, componentName)
   );
 

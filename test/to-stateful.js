@@ -14,7 +14,7 @@ test.cb('To stateful', t => {
   const filePath = path.join(tempDir, componentName, `${componentName}.jsx`);
 
   fsExtra.copySync(
-    path.join(__dirname, '..', 'test-components', componentName),
+    path.join(__dirname, '..', 'fixtures', componentName),
     path.join(tempDir, componentName)
   );
 
