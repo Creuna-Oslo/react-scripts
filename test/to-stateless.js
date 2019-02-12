@@ -4,6 +4,7 @@ const path = require('path');
 const tempy = require('tempy');
 
 const toStateless = require('../source/to-stateless');
+
 const eslintConfig = require('../.eslintrc.json');
 const { readFile, readFixture } = require('./helpers/read');
 

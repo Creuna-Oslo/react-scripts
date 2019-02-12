@@ -6,10 +6,7 @@ const ensureCanConvertToStateless = require('../source/utils/ensure-can-convert-
 const eslintrc = require('../.eslintrc.json');
 
 const validComponentSource = fs.readFileSync(
-  path.join(
-    __dirname,
-    '../fixtures/component-stateful/component-stateful.jsx'
-  ),
+  path.join(__dirname, '../fixtures/component-stateful/component-stateful.jsx'),
   'utf-8'
 );
 

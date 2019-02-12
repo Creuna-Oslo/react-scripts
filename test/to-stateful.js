@@ -1,25 +1,23 @@
 const test = require('ava');
-const fs = require('fs');
 const fsExtra = require('fs-extra');
 const path = require('path');
 const tempy = require('tempy');
 
 const toStateful = require('../source/to-stateful');
 
-test.cb('To stateful', t => {
-  t.plan(1);
+const eslintConfig = require('../.eslintrc.json');
+const { readFile, readFixture } = require('./helpers/read');
 
+test('To stateful', async t => {
   const componentName = 'component-stateless';
+  const fixturePath = path.resolve(__dirname, '..', 'fixtures', componentName);
   const tempDir = tempy.directory();
   const filePath = path.join(tempDir, componentName, `${componentName}.jsx`);
+  const expected = readFixture(path.join(componentName, 'transformed.jsx'));
 
-  fsExtra.copySync(
-    path.join(__dirname, '..', 'fixtures', componentName),
-    path.join(tempDir, componentName)
-  );
+  fsExtra.copySync(fixturePath, path.join(tempDir, componentName));
 
-  toStateful({ filePath }).then(() => {
-    t.snapshot(fs.readFileSync(filePath, 'utf-8'));
-    t.end();
-  });
+  await toStateful({ eslintConfig, filePath });
+
+  t.is(expected, readFile(filePath));
 });
