@@ -1,40 +1,41 @@
-const fs = require('fs');
-const path = require('path');
 const test = require('ava');
 
 const renameDataImport = require('../../source/transforms/rename-data-import');
 
-const templateSource = fs.readFileSync(
-  path.join(__dirname, '../../source/templates/static-site-page.jsx'),
-  'utf-8'
-);
+const source = `import React from "react";
+import content from "./component.json";
+const Component = () => null;
+export default Component;`;
 
 test('Renames json import', t => {
-  const sourceWithRenamedImport = renameDataImport(
-    templateSource,
-    'test-page',
-    'json'
-  );
+  const output = renameDataImport(source, 'test-page', 'json');
 
-  t.snapshot(sourceWithRenamedImport);
+  const expected = `import React from "react";
+import content from "./test-page.json";
+const Component = () => null;
+export default Component;`;
+
+  t.is(expected, output);
 });
 
 test('Renames js import', t => {
-  const sourceWithRenamedImport = renameDataImport(
-    templateSource,
-    'component',
-    'js'
-  );
+  const output = renameDataImport(source, 'component', 'js');
 
-  t.snapshot(sourceWithRenamedImport);
+  const expected = `import React from "react";
+import content from "./component.js";
+const Component = () => null;
+export default Component;`;
+
+  t.is(expected, output);
 });
 
 test('Renames yaml import', t => {
-  const sourceWithRenamedImport = renameDataImport(
-    templateSource,
-    'component',
-    'yml'
-  );
+  const output = renameDataImport(source, 'component', 'yml');
 
-  t.snapshot(sourceWithRenamedImport);
+  const expected = `import React from "react";
+import content from "./component.yml";
+const Component = () => null;
+export default Component;`;
+
+  t.is(expected, output);
 });

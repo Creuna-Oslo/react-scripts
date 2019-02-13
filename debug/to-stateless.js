@@ -12,7 +12,8 @@ fsExtra.copyFileSync(
   path.join(
     __dirname,
     '..',
-    'test-components',
+    'test',
+    'fixtures',
     'component-stateful',
     'component-stateful.jsx'
   ),

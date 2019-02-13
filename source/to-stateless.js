@@ -1,7 +1,6 @@
 /* eslint-env node */
 const chalk = require('chalk');
 const path = require('path');
-const prettier = require('prettier');
 
 const ensureCanConvertToStateless = require('./utils/ensure-can-convert-to-stateless');
 const getConfigs = require('./utils/get-configs');
@@ -14,7 +13,7 @@ module.exports = function({ eslintConfig, filePath }) {
   const _eslintConfig = eslintConfig;
 
   return new Promise((resolve, reject) => {
-    const { eslintConfig, prettierConfig } = getConfigs(_eslintConfig);
+    const { eslintConfig } = getConfigs(_eslintConfig);
 
     try {
       validateFilePath(filePath);
@@ -24,9 +23,10 @@ module.exports = function({ eslintConfig, filePath }) {
 
       ensureCanConvertToStateless(fileContent, eslintConfig);
 
-      const newFileContent = prettier.format(
-        toStatelessTransform(fileContent, componentName),
-        prettierConfig
+      const newFileContent = toStatelessTransform(
+        fileContent,
+        componentName,
+        _eslintConfig
       );
 
       writeFile(filePath, newFileContent);

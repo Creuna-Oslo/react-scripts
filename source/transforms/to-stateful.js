@@ -1,8 +1,11 @@
 const generate = require('@babel/generator').default;
 const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const { parse } = require('@babel/parser');
+const prettier = require('prettier');
 const traverse = require('@babel/traverse').default;
 const t = require('@babel/types');
+
+const getConfigs = require('../utils/get-configs');
 
 const {
   addThisDotProps,
@@ -11,8 +14,9 @@ const {
   isStatelessComponentDeclaration
 } = require('./babel-utils');
 
-module.exports = function(sourceCode, componentName) {
+module.exports = function(sourceCode, componentName, eslintConfig) {
   const pascalComponentName = kebabToPascal(componentName);
+  const { prettierConfig } = getConfigs(eslintConfig);
 
   const syntaxTree = parse(sourceCode, {
     plugins: ['jsx', 'classProperties'],
@@ -137,5 +141,5 @@ module.exports = function(sourceCode, componentName) {
 
   const { code } = generate(syntaxTree);
 
-  return code;
+  return prettier.format(code, prettierConfig);
 };

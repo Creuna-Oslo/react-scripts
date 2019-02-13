@@ -6,16 +6,17 @@ const tempy = require('tempy');
 
 const rename = require('../source/rename');
 
-test.cb('Rename', t => {
-  t.plan(4);
+const { readFile, readFixture } = require('./helpers/read');
+const eslintConfig = require('../.eslintrc.json');
 
+test('Rename', async t => {
   const componentName = 'component-stateful';
-  const newComponentName = 'new-name';
+  const newComponentName = 'new-component';
   const tempDir = tempy.directory();
   const newComponentPath = path.join(tempDir, newComponentName);
 
   fsExtra.copySync(
-    path.join(__dirname, '..', 'test-components', componentName),
+    path.join(__dirname, 'fixtures', componentName),
     path.join(tempDir, componentName)
   );
 
@@ -25,22 +26,39 @@ test.cb('Rename', t => {
     `${newComponentName}.scss`
   ];
 
-  rename({
+  await rename({
+    eslintConfig,
     filePath: path.join(tempDir, componentName, `${componentName}.jsx`),
-    newComponentName: newComponentName
-  }).then(() => {
-    t.deepEqual(
-      expectedFileNames,
-      fs
-        .readdirSync(newComponentPath)
-        .filter(fileName => expectedFileNames.includes(fileName))
-    );
-    expectedFileNames.forEach(fileName => {
-      t.snapshot(
-        fs.readFileSync(path.join(newComponentPath, fileName), 'utf-8'),
-        fileName
-      );
-    });
-    t.end();
+    newComponentName
   });
+
+  t.deepEqual(
+    expectedFileNames,
+    fs
+      .readdirSync(newComponentPath)
+      .filter(fileName => expectedFileNames.includes(fileName))
+  );
+
+  t.is(
+    readFixture(path.join(componentName, 'renamed.jsx')),
+    readFile(path.join(newComponentPath, `${newComponentName}.jsx`))
+  );
+
+  t.is(
+    `import NewComponent from './new-component.jsx';
+
+export default NewComponent;
+`,
+    readFile(path.join(newComponentPath, 'index.js'))
+  );
+
+  t.is(
+    `.new-component {
+}
+
+.new-component-class {
+}
+`,
+    readFile(path.join(newComponentPath, `${newComponentName}.scss`))
+  );
 });

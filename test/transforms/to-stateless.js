@@ -1,22 +1,20 @@
-const fs = require('fs');
 const path = require('path');
 const test = require('ava');
 
 const statelessTransform = require('../../source/transforms/to-stateless');
 
-const statefulComponentSource = fs.readFileSync(
-  path.join(
-    __dirname,
-    '../../test-components/component-stateful/component-stateful.jsx'
-  ),
-  'utf-8'
+const eslintConfig = require('../../.eslintrc.json');
+const { readFixture } = require('../helpers/read');
+
+const componentName = 'component-stateful';
+const expectedOutput = readFixture(path.join(componentName, 'transformed.jsx'));
+
+const sourceCode = readFixture(
+  path.join(componentName, 'component-stateful.jsx')
 );
 
 test('Works', t => {
-  const transformedSource = statelessTransform(
-    statefulComponentSource,
-    'component-stateful'
-  );
+  const output = statelessTransform(sourceCode, componentName, eslintConfig);
 
-  t.snapshot(transformedSource);
+  t.is(expectedOutput, output);
 });
