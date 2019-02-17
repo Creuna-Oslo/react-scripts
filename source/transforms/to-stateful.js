@@ -5,6 +5,7 @@ const prettier = require('prettier');
 const traverse = require('@babel/traverse').default;
 const t = require('@babel/types');
 
+const getCalleeName = require('../utils/get-callee-name');
 const getConfigs = require('../utils/get-configs');
 
 const {
@@ -35,16 +36,25 @@ module.exports = function(sourceCode, componentName, eslintConfig) {
   traverse(syntaxTree, {
     // Get render content and prop names
     VariableDeclarator(path) {
-      if (path.get('id').isIdentifier({ name: pascalComponentName })) {
-        try {
-          propNames = path.node.init.params[0].properties.map(
-            objectProperty => objectProperty.key.name
-          );
-        } catch (error) {
-          propNames = [];
-        }
-        renderBody = path.node.init.body;
+      if (!path.get('id').isIdentifier({ name: pascalComponentName })) {
+        return;
       }
+
+      if (path.get('init').isCallExpression()) {
+        const funcName = getCalleeName(path.node.init.callee);
+        throw new Error(
+          `'${funcName}' is not supported. Remove it and try again.`
+        );
+      }
+
+      try {
+        propNames = path.node.init.params[0].properties.map(
+          objectProperty => objectProperty.key.name
+        );
+      } catch (error) {
+        propNames = [];
+      }
+      renderBody = path.node.init.body;
     },
 
     AssignmentExpression(path) {

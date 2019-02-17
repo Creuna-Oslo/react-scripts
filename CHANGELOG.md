@@ -1,3 +1,9 @@
+# 4.0.3
+
+[https://github.com/Creuna-Oslo/react-scripts/pull/29]()
+
+- Fixes [issue 25](https://github.com/Creuna-Oslo/react-scripts/issues/25) - React.forwardRef making `to-stateful` behave unexpectedly.
+
 # 4.0.2
 
 [https://github.com/Creuna-Oslo/react-scripts/pull/27]()

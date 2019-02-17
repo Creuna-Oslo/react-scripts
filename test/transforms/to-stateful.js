@@ -18,3 +18,23 @@ test('Works', t => {
 
   t.is(expectedOutput, output);
 });
+
+test('With React.forwardRef', t => {
+  const sourceCode = `
+const A = React.forwardRef(
+  ({ prop }, ref) => (
+    <div ref={ref}>{prop}</div>
+  )
+);
+export default A;
+`;
+
+  const error = t.throws(() => {
+    statefulTransform(sourceCode, 'a', eslintConfig);
+  });
+
+  t.is(
+    "'React.forwardRef' is not supported. Remove it and try again.",
+    error.message
+  );
+});
