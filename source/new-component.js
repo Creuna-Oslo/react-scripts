@@ -3,11 +3,8 @@ const assert = require('assert');
 const chalk = require('chalk');
 const fsExtra = require('fs-extra');
 const path = require('path');
-const prettier = require('prettier');
 
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
-const generateIndexFile = require('./templates/generate-index-file');
-const getConfigs = require('./utils/get-configs');
 const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
@@ -19,14 +16,11 @@ module.exports = function({
   shouldBeStateful
 }) {
   return new Promise(async (resolve, reject) => {
-    const { prettierConfig } = getConfigs(eslintConfig);
-
     try {
       assert(folderPath, 'No path provided');
       assert(componentName, 'No component name provided.');
 
       const componentPath = path.join(folderPath, componentName);
-      const indexFilePath = path.join(componentPath, 'index.js');
       const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
       const scssFilePath = path.join(componentPath, `${componentName}.scss`);
 
@@ -34,11 +28,6 @@ module.exports = function({
         stateful: path.join(__dirname, './templates/stateful-component.jsx'),
         stateless: path.join(__dirname, './templates/stateless-component.jsx')
       };
-
-      const indexFileContent = prettier.format(
-        generateIndexFile(componentName),
-        prettierConfig
-      );
 
       ensureEmptyFolder(componentPath);
       await fsExtra.ensureDir(componentPath);
@@ -57,8 +46,7 @@ module.exports = function({
 
       const messages = [
         writeFile(jsxFilePath, newJsxFileContent),
-        writeFile(scssFilePath, `.${componentName} {}`),
-        writeFile(indexFilePath, indexFileContent)
+        writeFile(scssFilePath, `.${componentName} {}`)
       ];
 
       resolve({
