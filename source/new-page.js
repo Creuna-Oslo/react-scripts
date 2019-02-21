@@ -3,12 +3,10 @@ const assert = require('assert');
 const chalk = require('chalk');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
-const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const path = require('path');
 const prettier = require('prettier');
 
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
-const generateIndexFile = require('./templates/generate-index-file');
 const getConfigs = require('./utils/get-configs');
 const renameDataImport = require('./transforms/rename-data-import');
 const renameJSX = require('./transforms/rename-jsx');
@@ -38,13 +36,11 @@ module.exports = function({
       assert(fs.existsSync(folderPath), `Path '${folderPath}' does not exist.`);
 
       const componentPath = path.join(folderPath, componentName);
-      const indexFilePath = path.join(componentPath, 'index.js');
       const dataFilePath = path.join(
         componentPath,
         `${componentName}.${dataFileExtension}`
       );
       const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
-      const pascalComponentName = kebabToPascal(componentName);
 
       const templateContent = fs.readFileSync(
         path.join(__dirname, 'templates/static-site-page.jsx'),
@@ -78,18 +74,12 @@ module.exports = function({
       const staticDataFileContent =
         dataFileContent || dataFileTemplates[dataFileExtension] || '';
 
-      const indexFileContent = prettier.format(
-        generateIndexFile(componentName),
-        prettierConfig
-      );
-
       ensureEmptyFolder(componentPath);
       await fsExtra.ensureDir(componentPath);
 
       const messages = [
         writeFile(jsxFilePath, jsxFileContent),
-        writeFile(dataFilePath, staticDataFileContent),
-        writeFile(indexFilePath, indexFileContent)
+        writeFile(dataFilePath, staticDataFileContent)
       ];
 
       resolve({
