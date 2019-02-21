@@ -1,3 +1,7 @@
+# 5.0.0
+
+- BREAKING: Removes generation of `index.js` files for `newComponent` and `newPage` and renaming inside `index.js` for `rename`.
+
 # 4.0.3
 
 [https://github.com/Creuna-Oslo/react-scripts/pull/29]()
