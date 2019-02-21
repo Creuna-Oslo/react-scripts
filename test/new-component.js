@@ -10,11 +10,7 @@ const { readFile } = require('./helpers/read');
 
 const template = async (t, pathOrName, shouldBeStateful, expectedJSX) => {
   const componentName = path.basename(pathOrName, '.jsx');
-  const expectedFilesNames = [
-    `${componentName}.jsx`,
-    `${componentName}.scss`,
-    'index.js'
-  ];
+  const expectedFilesNames = [`${componentName}.jsx`, `${componentName}.scss`];
   const tempDir = tempy.directory();
   const componentPath = path.join(tempDir, pathOrName);
 

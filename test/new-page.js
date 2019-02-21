@@ -47,8 +47,7 @@ export default Component;
   t.is(expectedJsx, readFile(path.join(componentPath, 'component.jsx')));
   t.deepEqual(fs.readdirSync(componentPath), [
     'component.json',
-    'component.jsx',
-    'index.js'
+    'component.jsx'
   ]);
 });
 
@@ -58,11 +57,7 @@ test('New page with js data file', async t => {
     dataFileExtension: 'js'
   });
 
-  t.deepEqual(fs.readdirSync(componentPath), [
-    'component.js',
-    'component.jsx',
-    'index.js'
-  ]);
+  t.deepEqual(fs.readdirSync(componentPath), ['component.js', 'component.jsx']);
   t.is(
     'export default {};',
     readFile(path.join(componentPath, 'component.js'))
@@ -78,11 +73,7 @@ test('New page with js data file and custom content', async t => {
     dataFileContent
   });
 
-  t.deepEqual(fs.readdirSync(componentPath), [
-    'component.js',
-    'component.jsx',
-    'index.js'
-  ]);
+  t.deepEqual(fs.readdirSync(componentPath), ['component.js', 'component.jsx']);
   t.is(dataFileContent, readFile(path.join(componentPath, 'component.js')));
 });
 
@@ -97,8 +88,7 @@ test('New page with yaml data file and custom template', async t => {
 
   t.deepEqual(fs.readdirSync(componentPath), [
     'component.jsx',
-    'component.yml',
-    'index.js'
+    'component.yml'
   ]);
   t.is(dataFileContent, readFile(path.join(componentPath, 'component.yml')));
 });
