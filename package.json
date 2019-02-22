@@ -1,6 +1,6 @@
 {
   "name": "@creuna/react-scripts",
-  "version": "4.0.3",
+  "version": "5.0.0",
   "description": "Utility scripts for React projects",
   "author": "Asbjørn Hegdahl <asbjorn.hegdahl@creuna.no>",
   "contributors": [

@@ -21,7 +21,6 @@ test('Rename', async t => {
   );
 
   const expectedFileNames = [
-    'index.js',
     `${newComponentName}.jsx`,
     `${newComponentName}.scss`
   ];
@@ -42,14 +41,6 @@ test('Rename', async t => {
   t.is(
     readFixture(path.join(componentName, 'renamed.jsx')),
     readFile(path.join(newComponentPath, `${newComponentName}.jsx`))
-  );
-
-  t.is(
-    `import NewComponent from './new-component.jsx';
-
-export default NewComponent;
-`,
-    readFile(path.join(newComponentPath, 'index.js'))
   );
 
   t.is(
