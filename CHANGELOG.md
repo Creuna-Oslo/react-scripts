@@ -1,3 +1,7 @@
+# 6.0.0
+
+- BREAKING: Removes support for creating class components using `newComponent`
+
 # 5.0.0
 
 [https://github.com/Creuna-Oslo/react-scripts/pull/31]()

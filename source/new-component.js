@@ -9,12 +9,7 @@ const readFile = require('./utils/read-file');
 const renameTransform = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
 
-module.exports = function({
-  componentName,
-  eslintConfig,
-  folderPath,
-  shouldBeStateful
-}) {
+module.exports = function({ componentName, eslintConfig, folderPath }) {
   return new Promise(async (resolve, reject) => {
     try {
       assert(folderPath, 'No path provided');
@@ -24,22 +19,16 @@ module.exports = function({
       const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
       const scssFilePath = path.join(componentPath, `${componentName}.scss`);
 
-      const templates = {
-        stateful: path.join(__dirname, './templates/stateful-component.jsx'),
-        stateless: path.join(__dirname, './templates/stateless-component.jsx')
-      };
-
       ensureEmptyFolder(componentPath);
       await fsExtra.ensureDir(componentPath);
 
       const jsxFileContent = readFile(
-        shouldBeStateful ? templates.stateful : templates.stateless
+        path.join(__dirname, './templates/component.jsx')
       );
 
-      // Hard coded string name because that's what the template components are called
       const newJsxFileContent = renameTransform(
         jsxFileContent,
-        'component',
+        'component', // NOTE: This is the name of the template component
         componentName,
         eslintConfig
       );
@@ -52,9 +41,7 @@ module.exports = function({
       resolve({
         messages: messages.concat({
           emoji: '🎉',
-          text: `Created ${
-            shouldBeStateful ? 'stateful' : 'stateless'
-          } component ${chalk.greenBright(componentName)}`
+          text: `Created component ${chalk.greenBright(componentName)}`
         })
       });
     } catch (error) {

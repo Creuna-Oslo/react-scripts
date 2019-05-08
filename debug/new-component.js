@@ -6,8 +6,7 @@ const newComponent = require('../source/new-component');
 
 newComponent({
   componentName: process.argv[2] || 'test-component',
-  folderPath: path.join(__dirname, '..', 'dist'),
-  shouldBeStateful: process.argv.indexOf('-s') !== -1
+  folderPath: path.join(__dirname, '..', 'dist')
 })
   .then(({ messages }) => {
     messages.forEach(({ emoji, text }) => console.log(`${emoji} ${text}`));
