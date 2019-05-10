@@ -8,7 +8,7 @@ const newComponent = require('../source/new-component');
 const eslintConfig = require('../.eslintrc.json');
 const { readFile } = require('./helpers/read');
 
-const template = async (t, pathOrName, shouldBeStateful, expectedJSX) => {
+const template = async (t, pathOrName, expectedJSX) => {
   const componentName = path.basename(pathOrName, '.jsx');
   const expectedFilesNames = [`${componentName}.jsx`, `${componentName}.scss`];
   const tempDir = tempy.directory();
@@ -17,8 +17,7 @@ const template = async (t, pathOrName, shouldBeStateful, expectedJSX) => {
   await newComponent({
     componentName,
     eslintConfig,
-    folderPath: tempDir,
-    shouldBeStateful
+    folderPath: tempDir
   });
 
   t.is(expectedJSX, readFile(path.join(componentPath, `${componentName}.jsx`)));
@@ -29,7 +28,6 @@ test(
   'Stateless',
   template,
   'component-a',
-  false,
   `import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -44,33 +42,5 @@ ComponentA.propTypes = {
 };
 
 export default ComponentA;
-`
-);
-
-test(
-  'Stateful',
-  template,
-  'component-b',
-  true,
-  `import React from 'react';
-import PropTypes from 'prop-types';
-
-class ComponentB extends React.Component {
-  static propTypes = {
-    /* ---------------------- 📝 ---------------------- */
-  };
-
-  state = {};
-
-  render() {
-    return (
-      <div className="component-b">
-        {/* -------------------- 📝 -------------------- */}
-      </div>
-    );
-  }
-}
-
-export default ComponentB;
 `
 );
