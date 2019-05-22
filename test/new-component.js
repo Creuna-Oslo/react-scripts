@@ -31,11 +31,13 @@ test(
   `import React from 'react';
 import PropTypes from 'prop-types';
 
-const ComponentA = () => (
-  <div className="component-a">
-    {/* -------------------- 📝 -------------------- */}
-  </div>
-);
+const ComponentA = () => {
+  return (
+    <div className="component-a">
+      {/* -------------------- 📝 -------------------- */}
+    </div>
+  );
+};
 
 ComponentA.propTypes = {
   /* --------------------- 📝 --------------------- */

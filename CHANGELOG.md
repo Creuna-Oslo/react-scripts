@@ -1,3 +1,7 @@
+# 6.1.0
+
+- Fixes [issue 34](https://github.com/Creuna-Oslo/react-scripts/issues/34): Adds explicit code block to comonents created with `newComponent`
+
 # 6.0.0
 
 - BREAKING: Removes support for creating class components using `newComponent`
