@@ -1,3 +1,7 @@
+# 6.2.0
+
+- Fixes [issue 36](https://github.com/Creuna-Oslo/react-scripts/issues/36): Adds `template` option in `newPage`
+
 # 6.1.0
 
 - Fixes [issue 34](https://github.com/Creuna-Oslo/react-scripts/issues/34): Adds explicit code block to comonents created with `newComponent`

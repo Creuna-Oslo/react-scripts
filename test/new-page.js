@@ -32,12 +32,11 @@ test('New page', async t => {
 
 import React from 'react';
 import Layout from '../../layout';
-
 import content from './component.json';
 
 const Component = () => (
   <Layout>
-    {/* ------------------------- 📝 ------------------------- */}
+    <div>REPLACE ME</div>
   </Layout>
 );
 
@@ -64,7 +63,7 @@ test('New page with js data file', async t => {
   );
 });
 
-test('New page with js data file and custom content', async t => {
+test('New page with js data file and custom data template', async t => {
   const dataFileContent = 'export default { a: 1 };';
 
   const componentPath = await runNewPage({
@@ -77,7 +76,7 @@ test('New page with js data file and custom content', async t => {
   t.is(dataFileContent, readFile(path.join(componentPath, 'component.js')));
 });
 
-test('New page with yaml data file and custom template', async t => {
+test('New page with yaml data file and custom data template', async t => {
   const dataFileContent = 'data:\n  - "hello"';
 
   const componentPath = await runNewPage({
@@ -116,6 +115,41 @@ test('With page name, group and url', async t => {
     .join('\n');
 
   t.is(expectedLines, frontMatterLines);
+});
+
+test('With custom page template', async t => {
+  const componentPath = await runNewPage({
+    componentName: 'component',
+    template: [
+      'import React from "react";',
+      'import Something from "./something";',
+      'import content from %%dataFilePath%%;',
+      'const %%componentName%% = () => (',
+      '  <Something>',
+      '    <div>REPLACE ME</div>',
+      '  </Something>',
+      ');',
+      'export default %%componentName%%;'
+    ]
+  });
+
+  const expectedSource = `/*
+ */
+
+import React from 'react';
+import Something from './something';
+import content from './component.json';
+
+const Component = () => (
+  <Something>
+    <div>REPLACE ME</div>
+  </Something>
+);
+
+export default Component;
+`;
+
+  t.is(expectedSource, readFile(path.join(componentPath, 'component.jsx')));
 });
 
 const throwsTemplate = async (t, options, erorrMessage) => {

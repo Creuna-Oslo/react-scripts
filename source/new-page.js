@@ -3,14 +3,15 @@ const assert = require('assert');
 const chalk = require('chalk');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
+const kebabToPascal = require('@creuna/utils/kebab-to-pascal').default;
 const path = require('path');
 const prettier = require('prettier');
+const t = require('@babel/types');
 
 const ensureEmptyFolder = require('./utils/ensure-empty-folder');
 const getConfigs = require('./utils/get-configs');
-const renameDataImport = require('./transforms/rename-data-import');
-const renameJSX = require('./transforms/rename-jsx');
 const writeFile = require('./utils/write-file');
+const generateComponent = require('./templates/static-site-page');
 
 const dataFileTemplates = {
   json: '{}',
@@ -25,6 +26,7 @@ module.exports = function({
   folderPath,
   groupName,
   humanReadableName,
+  template, // Expecting an array
   url
 }) {
   return new Promise(async (resolve, reject) => {
@@ -42,21 +44,13 @@ module.exports = function({
       );
       const jsxFilePath = path.join(componentPath, `${componentName}.jsx`);
 
-      const templateContent = fs.readFileSync(
-        path.join(__dirname, 'templates/static-site-page.jsx'),
-        { encoding: 'utf-8' }
-      );
-
-      const renamedSource = renameJSX(
-        templateContent,
-        'component',
-        componentName
-      );
-
-      const sourceWithRenamedImport = renameDataImport(
-        renamedSource,
-        componentName,
-        dataFileExtension
+      const replacements = {
+        componentName: t.identifier(kebabToPascal(componentName)),
+        dataFilePath: t.stringLiteral(`./${componentName}.${dataFileExtension}`)
+      };
+      const componentSource = generateComponent(
+        replacements,
+        Array.isArray(template) ? template.join('\n') : template
       );
 
       const frontmatter =
@@ -67,7 +61,7 @@ module.exports = function({
         `*/\n\n`;
 
       const jsxFileContent = prettier.format(
-        frontmatter + sourceWithRenamedImport,
+        frontmatter + componentSource,
         prettierConfig
       );
 
