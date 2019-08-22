@@ -36,7 +36,7 @@ import content from './component.json';
 
 const Component = () => (
   <Layout>
-    <div>REPLACE ME</div>
+    {/* ------------------------- 📝 ------------------------- */}
   </Layout>
 );
 
@@ -126,7 +126,7 @@ test('With custom page template', async t => {
       'import content from %%dataFilePath%%;',
       'const %%componentName%% = () => (',
       '  <Something>',
-      '    <div>REPLACE ME</div>',
+      '    {/* ------------------------- 📝 ------------------------- */}',
       '  </Something>',
       ');',
       'export default %%componentName%%;'
@@ -142,7 +142,7 @@ import content from './component.json';
 
 const Component = () => (
   <Something>
-    <div>REPLACE ME</div>
+    {/* ------------------------- 📝 ------------------------- */}
   </Something>
 );
 

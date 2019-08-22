@@ -1,3 +1,7 @@
+# 6.2.1
+
+- Fixes comments not being preserved in `newPage` templates
+
 # 6.2.0
 
 - Fixes [issue 36](https://github.com/Creuna-Oslo/react-scripts/issues/36): Adds `template` option in `newPage`
